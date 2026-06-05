@@ -1,7 +1,8 @@
 # Estructura del proyecto — Dungeon Explorer
 
 Juego de exploración de mazmorras por turnos que corre íntegramente en el browser,
-sin dependencias externas ni servidor. Puede abrirse directamente como `file://`.
+sin dependencias externas. Requiere ser servido por HTTP (no funciona como `file://`
+porque los módulos ES6 tienen restricciones CORS).
 
 ---
 
@@ -9,91 +10,219 @@ sin dependencias externas ni servidor. Puede abrirse directamente como `file://`
 
 ```
 tablero/
-├── index.html
-├── css/
-│   └── style.css
-├── js/
-│   ├── loader.js
-│   └── game.js
-├── assets/
-│   ├── player.svg
-│   ├── floor.svg
-│   ├── wall.svg
-│   ├── exit.svg
-│   ├── rat.svg
-│   ├── skeleton.svg
-│   ├── troll.svg
-│   ├── goblin.svg
-│   ├── dragon.svg
-│   ├── npc.svg
-│   ├── treasure.svg
-│   ├── potion.svg
-│   └── trap.svg
-└── level/
-    ├── manifest.js
-    ├── level1.js
-    ├── level2.js
-    └── level3.js
+├── index.html                  ← hub de juegos
+├── shared/                     ← módulos reutilizables entre juegos
+│   ├── modal.js
+│   ├── log.js
+│   └── storage.js
+└── dungeon/
+    ├── index.html
+    ├── css/
+    │   └── style.css
+    ├── js/
+    │   ├── main.js             ← entry point
+    │   ├── game.js             ← orquestador
+    │   ├── state.js
+    │   ├── fog.js
+    │   ├── combat.js
+    │   ├── events.js
+    │   ├── renderer.js
+    │   └── hud.js
+    ├── assets/
+    │   └── *.svg
+    └── level/
+        ├── manifest.js
+        ├── level1.js
+        ├── level2.js
+        └── level3.js
 ```
 
 ---
 
-## Archivos
+## Módulos compartidos (`shared/`)
 
-### `index.html`
-Contiene únicamente el markup HTML: la barra de herramientas (exportar/importar),
-el layout con el HUD y el tablero, el panel de log y el modal. No tiene lógica
-ni estilos inline. El único `<script>` que carga es `js/loader.js`.
+Reutilizables en cualquier juego bajo `tablero/`. No contienen referencias
+a Dungeon ni a ningún juego específico.
 
-### `css/style.css`
-Todos los estilos del juego. Puntos clave:
-- `.cell` — celda base del tablero (52×52 px, posición relativa para apilar capas)
-- `.cell.fog` — celda no descubierta (oculta todo el contenido)
-- `.cell.dim` — celda visible pero no visitada (entidad al 50% de opacidad + overlay oscuro)
-- `.cell-bg` / `.cell-entity` — capas absolutas dentro de cada celda para separar fondo de entidad
+### `shared/modal.js`
+```js
+showModal(title, body, btns)   // btns: [{ label, cls, fn }]
+closeModal()
+```
+Muestra un overlay con título, texto y botones de acción. Cada botón cierra el modal
+antes de ejecutar su `fn`.
 
-### `js/loader.js`
-Punto de entrada. Carga `game.js`, luego `level/manifest.js` y finalmente cada
-archivo de nivel declarado en el manifest. No requiere modificar `index.html`
-al agregar nuevos niveles.
+### `shared/log.js`
+```js
+createLog(elementId)  // → función log(txt, cls)
+```
+Factory: cada juego crea su propio logger apuntando a su panel de mensajes.
+La clase CSS `cls` es responsabilidad del que llama.
+
+### `shared/storage.js`
+```js
+download(content, filename, type)
+readJSON(evt, cb)   // cb(data, error)
+```
+`readJSON` pasa `(null, mensaje)` al callback si el JSON es inválido, sin
+acoplar el manejo de errores al sistema de log del juego.
+
+---
+
+## Módulos de Dungeon (`dungeon/js/`)
+
+### `main.js` — Entry point
+
+Punto de entrada declarado como `<script type="module">` en `index.html`.
+Responsabilidades:
+- Registrar listeners de teclado (WASD / flechas) y botones de la barra IO
+- Cargar los niveles con `import()` dinámico a partir del manifest
+- Llamar a `restartGame(levels)` para iniciar el juego
 
 **Flujo de carga:**
 ```
-loader.js
-  └─ game.js  (onload)
-       └─ level/manifest.js  (onload → LEVEL_MANIFEST disponible)
-            └─ level1.js  (onload)
-                 └─ level2.js  (onload)
-                      └─ level3.js  (onload)
-                           └─ restartGame()
+<script type="module" src="js/main.js">
+  │
+  ├─ import estático: game.js, level/manifest.js
+  │
+  └─ await Promise.all(
+       MANIFEST.map(name => import(`../level/${name}.js`))
+     )
+       └─ restartGame(levels)
 ```
 
-Los niveles se cargan en el orden declarado en `LEVEL_MANIFEST`.
-Al terminar el último se llama a `restartGame()`.
+Los niveles se cargan en paralelo. Al resolverse todos, se inicia el juego.
 
-### `js/game.js`
-Toda la lógica del juego. Organizado en secciones:
+### `game.js` — Orquestador
 
-| Sección | Responsabilidad |
-|---------|----------------|
-| **Globals** | `FOG_RADIUS`, `LEVELS`, `currentLevelIndex`, `BOARD_DATA`, `G` |
-| **Game State** | `initState()` — crea el estado inicial a partir de un nivel |
-| **Fog of War** | `revealAround()` — expande el área visible alrededor del jugador |
-| **Combat** | `roll()`, `resolveCombat()` — combate por turnos con aleatoriedad |
-| **Move Logic** | `tryMove()` — valida movimiento, actualiza posición y dispara eventos |
-| **Event Handlers** | `EVENT_HANDLERS`, `handleEvent()` — tabla de despacho por tipo de evento |
-| **Renderer** | `buildBoard()`, `render()`, `cellEl()`, `getEventAssetId()` |
-| **HUD** | `updateHUD()` — sincroniza stats con el DOM |
-| **Log** | `log()` — agrega líneas al panel de mensajes |
-| **Input** | keydown + `onCellClick()` |
-| **Modal** | `showModal()`, `closeModal()` |
-| **Shop** | `itemLabel()`, `buyItem()` — lógica de compra al NPC |
-| **Import/Export** | `exportBoard()`, `importBoard()`, `readJSON()`, `download()` |
-| **Init** | `buildLevels()`, `restartGame()`, `advanceLevel()` |
+Maneja el estado de la partida (`G`) y la lógica que requiere coordinar
+múltiples módulos. Exporta las funciones públicas que `main.js` necesita.
+
+| Exporta | Descripción |
+|---------|-------------|
+| `restartGame(levelList)` | Inicia desde el nivel 1 |
+| `tryMove(dr, dc)` | Procesa un turno de movimiento |
+| `exportBoard()` | Descarga el nivel activo como JSON |
+| `importBoard(evt)` | Carga un nivel desde un archivo JSON |
+
+**Estado interno (no exportado):**
+
+| Variable | Tipo | Descripción |
+|----------|------|-------------|
+| `G` | Object | Estado completo de la partida en curso |
+| `levels` | Array | Niveles cargados en la sesión actual |
+| `currentIndex` | Number | Índice del nivel activo |
+
+**Secciones internas:**
+
+| Sección | Funciones |
+|---------|-----------|
+| Shop | `itemLabel()`, `buyItem()` |
+| Event dispatch | `handleEvent()` — recibe resultados de `events.js` y aplica efectos secundarios |
+| Lifecycle | `winGame()`, `advanceLevel()`, `gameOver()` |
+| Input (click) | `onCellClick()` — pasada como callback a `buildBoard()` |
+
+> `handleEvent` es el puente entre los handlers puros de `events.js` y los
+> efectos del juego: logging, modales, game over, avance de nivel.
+
+### `state.js`
+
+```js
+initState(boardData)  // → G
+```
+
+Crea el estado inicial de la partida a partir de los datos de un nivel.
+Sin efectos secundarios.
+
+```js
+G = {
+  board:    boardData,             // referencia al nivel activo
+  player:   { hp, maxHp, atk, def, gold },
+  pos:      [row, col],
+  turns:    Number,
+  events:   { "r,c": { type, data } },  // copia mutable del nivel
+  visited:  Set,                   // celdas donde el jugador estuvo
+  revealed: Set,                   // celdas dentro del radio de visión
+  over:     Boolean,
+  won:      Boolean,
+}
+```
+
+### `fog.js`
+
+```js
+revealAround(state, r, c, radius = 2)
+```
+
+Marca `r,c` como visitada y agrega al set `revealed` todas las celdas
+dentro del radio (cuadrado de lado `2*radius+1`). El radio es configurable
+para facilitar experimentación.
+
+### `combat.js`
+
+```js
+roll(min, max)                  // entero aleatorio [min, max]
+resolveCombat(state, enemy)     // → { won: bool, lines: [{cls, txt}] }
+```
+
+Combate por turnos: el jugador ataca primero. No llama a `log()` ni modifica
+el DOM — devuelve las líneas de texto para que el llamador decida cómo mostrarlas.
+
+### `events.js`
+
+```js
+EVENT_HANDLERS   // { enemy, treasure, potion, trap, npc }
+```
+
+Cada handler es una **transformación pura de estado**: modifica `state` y
+devuelve un objeto de resultado. No llama a `log()`, `showModal()` ni `gameOver()`.
+
+| Handler | Retorna |
+|---------|---------|
+| `enemy` | `{ lines, died }` |
+| `treasure` | `{ msg, cls }` |
+| `potion` | `{ msg, cls }` |
+| `trap` | `{ msg, cls, died }` |
+| `npc` | `{ shop }` |
+
+`game.js` recibe esos resultados en `handleEvent()` y aplica los efectos secundarios.
+Este diseño evita dependencias circulares entre `events.js` y `game.js`.
+
+### `renderer.js`
+
+```js
+buildBoard(boardData, container, onCellClick)
+render(state, container)
+getEventAssetId(ev)   // → string | null
+```
+
+`buildBoard` construye la grilla de `<div class="cell">` y registra el callback
+de click recibido como parámetro (sin acoplarse a `tryMove` directamente).
+
+`render` itera todas las celdas y actualiza `className` e `innerHTML` según el
+estado de visibilidad (fog / dim / visible) y la presencia del jugador o eventos.
+
+### `hud.js`
+
+```js
+updateHUD(state)
+```
+
+Sincroniza los elementos del DOM del HUD con `state.player` y `state.turns`.
+
+---
+
+## Archivos estáticos
+
+### `css/style.css`
+Puntos clave:
+- `.cell` — celda base (52×52 px, posición relativa para apilar capas)
+- `.cell.fog` — celda no descubierta (oculta todo el contenido)
+- `.cell.dim` — celda visible pero no visitada (entidad al 50% + overlay oscuro)
+- `.cell-bg` / `.cell-entity` — capas absolutas para separar fondo de entidad
 
 ### `assets/*.svg`
-Cada sprite es un archivo SVG independiente de 64×64 px referenciado
-directamente como `<img src="assets/NOMBRE.svg">`. No se usa encoding base64.
+Sprites SVG de 64×64 px. Se referencian como `<img src="assets/NOMBRE.svg">`.
 Para reemplazar un sprite basta sustituir el archivo.
 
 | Archivo | Uso |
@@ -109,95 +238,45 @@ Para reemplazar un sprite basta sustituir el archivo.
 | `dragon.svg` | Jefe final (nivel 3) |
 | `npc.svg` | Mercader/NPC |
 | `treasure.svg` | Cofre de oro |
-| `potion.svg` | Poción de vida (pickup) |
-| `trap.svg` | Trampa oculta |
-
-### `level/manifest.js`
-Declara el array `LEVEL_MANIFEST` con los nombres de archivo de los niveles
-en orden de juego. `loader.js` lo lee para saber exactamente qué cargar,
-evitando requests 404 por prueba y error.
-
-```js
-var LEVEL_MANIFEST = ['level1', 'level2', 'level3'];
-```
-
-### `level/level*.js`
-Cada nivel declara una variable global con `var` (necesario para que sea
-accesible como propiedad de `window`, que es como `buildLevels()` los descubre).
-
-```js
-var LEVEL1 = {
-  meta: {
-    name: "Nombre del nivel",
-    rows: 12, cols: 12,
-    startPos: [1, 1],
-    player: { hp: 20, maxHp: 20, atk: 5, def: 3, gold: 0 }
-  },
-  tileset: {
-    floor: { passable: true,  asset: "floor" },
-    wall:  { passable: false, asset: "wall"  },
-    exit:  { passable: true,  asset: "exit"  }
-  },
-  map: [
-    ["wall", "floor", ...],  // array de strings por fila
-    ...
-  ],
-  events: {
-    "fila,col": { type: "enemy",    data: { id, name, hp, maxHp, atk, def, gold, xp } },
-    "fila,col": { type: "treasure", data: { gold, msg } },
-    "fila,col": { type: "potion",   data: { hp, msg } },
-    "fila,col": { type: "trap",     data: { dmg, msg } },
-    "fila,col": { type: "npc",      data: { name, msg, items: [...] } },
-  }
-};
-```
-
-> **Nota:** `const` y `let` en scripts no-module no crean propiedades en `window`,
-> por lo que `buildLevels()` no los encontraría. Los archivos de nivel usan `var`
-> por esta razón específica.
+| `potion.svg` | Poción de vida |
+| `trap.svg` | Trampa |
 
 ---
 
 ## Flujo de datos
 
 ```
-loader.js
+main.js
   │
-  ├─ carga game.js (define funciones y EVENT_HANDLERS)
+  ├─ import() dinámico de level1..N.js  (en paralelo)
   │
-  ├─ carga level/manifest.js (define LEVEL_MANIFEST en window)
-  │
-  └─ carga level1..N.js según LEVEL_MANIFEST (definen LEVEL1..N en window)
-       │
-       └─ restartGame()
-            ├─ buildLevels()  →  LEVELS = [LEVEL1, LEVEL2, ...]
-            ├─ initState()    →  G = { board, player, pos, events, visited, revealed, ... }
-            ├─ revealAround() →  G.visited, G.revealed
-            ├─ buildBoard()   →  crea los <div class="cell"> en el DOM
-            └─ render()       →  actualiza innerHTML de cada celda
+  └─ restartGame(levels)
+       ├─ initState(levels[0])   →  G
+       ├─ revealAround(G, ...)   →  G.visited, G.revealed
+       ├─ buildBoard(G.board, container, onCellClick)  →  DOM
+       ├─ render(G, container)   →  actualiza innerHTML
+       └─ updateHUD(G)
 ```
 
 ### Ciclo por turno
 
 ```
 input (tecla / click)
-  └─ tryMove(dr, dc)
-       ├─ valida límites y passable
-       ├─ actualiza pos, turns
-       ├─ revealAround()
-       ├─ handleEvent()  →  EVENT_HANDLERS[type](state, key, data)
-       │    ├─ enemy    →  resolveCombat() → gameOver() | continuar
-       │    ├─ treasure →  suma gold
-       │    ├─ potion   →  suma hp
-       │    ├─ trap     →  resta hp → gameOver()
-       │    └─ npc      →  showModal() con items[]
-       ├─ render()
-       └─ updateHUD()
+  └─ tryMove(dr, dc)                          [game.js]
+       ├─ validar límites y passable
+       ├─ G.pos, G.turns
+       ├─ revealAround(G, nr, nc)             [fog.js]
+       ├─ handleEvent(G, key, event)          [game.js]
+       │    └─ EVENT_HANDLERS[type](G, key, data)  [events.js]
+       │         └─ retorna { lines?, msg?, died?, shop? }
+       │    ├─ log(lines / msg)
+       │    ├─ died → gameOver()
+       │    └─ shop → showModal() con buyItem()
+       ├─ render(G, container)                [renderer.js]
+       └─ updateHUD(G)                        [hud.js]
 ```
 
 ### Sistema de niebla de guerra
-
-Cada celda puede estar en uno de tres estados:
 
 | Estado | Condición | Visual |
 |--------|-----------|--------|
@@ -205,22 +284,30 @@ Cada celda puede estar en uno de tres estados:
 | `dim` | En `revealed`, no en `visited` | Visible al 50%, overlay oscuro |
 | visible | En `visited` | Completamente visible |
 
-`visited` contiene solo las posiciones donde el jugador ha estado.
-`revealed` contiene todas las celdas dentro del radio `FOG_RADIUS` de cada posición visitada.
-Las entidades (enemigos, ítems) se muestran si la celda está en `revealed`.
+`visited` contiene las posiciones donde el jugador ha estado.
+`revealed` contiene todas las celdas dentro del radio de cada posición visitada.
 
 ---
 
 ## Agregar un nivel nuevo
 
-1. Crear `level/levelN.js` con `var LEVELN = { ... }`
+1. Crear `level/levelN.js`:
+```js
+export default {
+  meta: { name, rows, cols, startPos, player: { hp, maxHp, atk, def, gold } },
+  tileset: { ... },
+  map: [ [...], ... ],
+  events: { "r,c": { type, data }, ... }
+};
+```
 2. Agregar `'levelN'` al array en `level/manifest.js`
 
-No se requieren cambios en `game.js` ni en `index.html`.
+No se requieren cambios en ningún otro archivo.
 
 ## Agregar un tipo de evento nuevo
 
-1. Agregar el handler en `EVENT_HANDLERS` en `game.js`
-2. Agregar el caso en `getEventAssetId()` si tiene representación visual
-3. Agregar el SVG en `assets/`
-4. Usar el tipo en los archivos de nivel
+1. Agregar el handler en `EVENT_HANDLERS` en `js/events.js` (retornar datos, sin efectos secundarios)
+2. Agregar el caso en `handleEvent()` en `js/game.js` si el resultado necesita manejo especial
+3. Agregar el caso en `getEventAssetId()` en `js/renderer.js` si tiene representación visual
+4. Agregar el SVG en `assets/`
+5. Usar el tipo en los archivos de nivel
