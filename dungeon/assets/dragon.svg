@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <polygon points="32,30 6,4 12,38" fill="#7a1010"/>
+  <polygon points="32,30 58,4 52,38" fill="#7a1010"/>
+  <line x1="32" y1="30" x2="6" y2="4" stroke="#5a0808" stroke-width="1"/>
+  <line x1="32" y1="30" x2="12" y2="38" stroke="#5a0808" stroke-width="1"/>
+  <line x1="32" y1="30" x2="58" y2="4" stroke="#5a0808" stroke-width="1"/>
+  <line x1="32" y1="30" x2="52" y2="38" stroke="#5a0808" stroke-width="1"/>
+  <ellipse cx="32" cy="44" rx="16" ry="13" fill="#8b1a1a"/>
+  <ellipse cx="26" cy="32" rx="8" ry="11" fill="#9a2020" transform="rotate(-15,26,32)"/>
+  <ellipse cx="18" cy="21" rx="13" ry="9" fill="#9a2020"/>
+  <ellipse cx="8" cy="24" rx="7" ry="5" fill="#9a2020"/>
+  <circle cx="6" cy="23" r="1.5" fill="#5a0808"/>
+  <circle cx="17" cy="18" r="3.5" fill="#ffcc00"/>
+  <circle cx="16" cy="18" r="2" fill="#111"/>
+  <circle cx="15" cy="17" r=".7" fill="#fff" opacity=".6"/>
+  <polygon points="22,13 20,3 26,12" fill="#5a0808"/>
+  <polygon points="29,11 29,2 33,10" fill="#5a0808"/>
+  <ellipse cx="2" cy="27" rx="5" ry="3" fill="#ff6600" opacity=".85"/>
+  <ellipse cx="0" cy="26" rx="3" ry="2" fill="#ffee00" opacity=".9"/>
+  <path d="M46 52 Q58 56 60 48 Q62 40 54 38" stroke="#7a1010" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <polygon points="54,38 60,34 62,41" fill="#5a0808"/>
+  <line x1="20" y1="54" x2="16" y2="62" stroke="#5a0808" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="26" y1="56" x2="24" y2="63" stroke="#5a0808" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="38" y1="56" x2="36" y2="63" stroke="#5a0808" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="44" y1="54" x2="48" y2="62" stroke="#5a0808" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

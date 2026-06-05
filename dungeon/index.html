@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dungeon Explorer</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h1>⚔ Dungeon Explorer</h1>
+
+<div id="io-bar">
+  <button onclick="exportBoard()">Exportar tablero</button>
+  <label><button onclick="document.getElementById('file-import').click()">Importar tablero</button></label>
+  <input type="file" id="file-import" accept=".json" onchange="importBoard(event)">
+  <button class="danger" onclick="restartGame()">Nueva partida</button>
+</div>
+
+<div id="layout">
+  <div id="hud">
+    <div class="hud-title">Estado</div>
+    <div>
+      <div class="stat-row">
+        <span class="stat-label">Vida</span>
+        <span class="stat-value" id="stat-hp-val">20/20</span>
+      </div>
+      <div class="bar-wrap"><div class="bar bar-hp" id="bar-hp" style="width:100%"></div></div>
+    </div>
+    <div class="stat-row"><span class="stat-label">Ataque</span><span class="stat-value" id="stat-atk-val">5</span></div>
+    <div class="stat-row"><span class="stat-label">Defensa</span><span class="stat-value" id="stat-def-val">3</span></div>
+    <div class="stat-row"><span class="stat-label">Oro</span><span class="stat-value" id="stat-gold-val">0</span></div>
+    <div class="stat-row"><span class="stat-label">Turnos</span><span class="stat-value" id="stat-turns-val">0</span></div>
+  </div>
+
+  <div>
+    <div id="board" tabindex="0"></div>
+    <div id="controls">
+      WASD / ↑↓←→ para moverse &nbsp;|&nbsp; Click en casilla adyacente
+    </div>
+  </div>
+</div>
+
+<div id="log-wrap"><div id="log"></div></div>
+
+<div id="overlay">
+  <div id="modal">
+    <h2 id="modal-title">Título</h2>
+    <p id="modal-body">Cuerpo</p>
+    <div id="modal-btns"></div>
+  </div>
+</div>
+
+<script src="js/loader.js"></script>
+</body>
+</html>
