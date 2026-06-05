@@ -1,4 +1,4 @@
-var LEVEL2 = {
+export default {
   meta: {
     name: "El Pasillo de las Sombras",
     rows: 12,

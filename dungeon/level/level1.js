@@ -1,4 +1,4 @@
-var LEVEL1 = {
+export default {
   meta: {
     name: "La Mazmorra del Olvido",
     rows: 12,

@@ -1,4 +1,4 @@
-var LEVEL3 = {
+export default {
   meta: {
     name: "La Cámara del Rey Demonio",
     rows: 12,
