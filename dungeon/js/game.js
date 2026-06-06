@@ -21,6 +21,7 @@ const logEl   = () => document.getElementById('log');
 function itemLabel(item) {
   if (item.type === 'potion') return `Poción +${item.hp} HP (${item.price} oro)`;
   if (item.type === 'weapon') return `${item.name} +${item.atk} ATK (${item.price} oro)`;
+  if (item.type === 'armor')  return `${item.name} +${item.def} DEF (${item.price} oro)`;
   return `${item.name} (${item.price} oro)`;
 }
 
@@ -33,6 +34,9 @@ function buyItem(item) {
   } else if (item.type === 'weapon') {
     G.player.atk += item.atk;
     log(`⚔ Compraste ${item.name}. ATK: ${G.player.atk} | Oro: ${G.player.gold}`, 'ok');
+  } else if (item.type === 'armor') {
+    G.player.def += item.def;
+    log(`🛡 Compraste ${item.name}. DEF: ${G.player.def} | Oro: ${G.player.gold}`, 'ok');
   }
   updateHUD(G);
 }
