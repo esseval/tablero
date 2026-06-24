@@ -8,6 +8,7 @@ export function initState(boardData) {
     events:   { ...boardData.events },
     visited:  new Set(),
     revealed: new Set(),
+    stepsRemaining: 0,
     over:     false,
     won:      false,
   };

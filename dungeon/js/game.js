@@ -6,6 +6,7 @@ import { updateHUD }             from './hud.js';
 import { showModal, closeModal } from '../../shared/modal.js';
 import { createLog }             from '../../shared/log.js';
 import { download, readJSON }    from '../../shared/storage.js';
+import { roll }                  from './combat.js';
 
 const log = createLog('log');
 
@@ -43,6 +44,25 @@ function buyItem(item) {
   updateHUD(G);
 }
 
+// ── dice ──────────────────────────────────────────────────────────────────
+
+export function rollDice() {
+  if (!G || G.over) return;
+  const n = G.player.dice || 1;
+  let total = 0;
+  const parts = [];
+  for (let i = 0; i < n; i++) {
+    const r = roll(1, 6);
+    parts.push(r);
+    total += r;
+  }
+  G.stepsRemaining = total;
+  G.turns++;
+  const desc = parts.join(' + ');
+  log(`🎲 ${desc}${n > 1 ? ` = ${total}` : ''} pasos (turno ${G.turns})`, 'sys');
+  updateHUD(G);
+}
+
 // ── event dispatch ────────────────────────────────────────────────────────
 
 function handleEvent(state, key, event) {
@@ -71,6 +91,7 @@ function handleEvent(state, key, event) {
 
 export function tryMove(dr, dc) {
   if (!G || G.over) return;
+  if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
   const map = G.board.map;
@@ -81,7 +102,7 @@ export function tryMove(dr, dc) {
   if (!tile || !tile.passable) return;
 
   G.pos = [nr, nc];
-  G.turns++;
+  G.stepsRemaining--;
   revealAround(G, nr, nc);
 
   const eKey  = `${nr},${nc}`;
@@ -97,6 +118,10 @@ export function tryMove(dr, dc) {
 
   render(G, boardEl());
   updateHUD(G);
+
+  if (G.stepsRemaining <= 0 && !G.over && !G.won) {
+    rollDice();
+  }
 }
 
 // ── lifecycle ─────────────────────────────────────────────────────────────
@@ -134,7 +159,7 @@ function advanceLevel(player) {
   updateHUD(G);
   boardEl().focus();
   log(`Nivel ${currentIndex + 1}: "${G.board.meta.name}"`, 'sys');
-  log('Usá WASD / flechas o hacé click en una casilla adyacente para moverte.', 'sys');
+  rollDice();
 }
 
 function goBackLevel() {
@@ -153,6 +178,7 @@ function goBackLevel() {
   updateHUD(G);
   boardEl().focus();
   log(`Volviste al nivel ${currentIndex + 1}: "${G.board.meta.name}"`, 'sys');
+  rollDice();
 }
 
 function gameOver() {
@@ -182,7 +208,7 @@ export function restartGame(levelList) {
   updateHUD(G);
   boardEl().focus();
   log(`Bienvenido a "${G.board.meta.name}". Llegá a la salida.`, 'sys');
-  log('Usá WASD / flechas o hacé click en una casilla adyacente para moverte.', 'sys');
+  rollDice();
 }
 
 // ── input (click) ─────────────────────────────────────────────────────────

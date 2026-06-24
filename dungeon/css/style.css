@@ -51,6 +51,7 @@ h1{color:#e8c84a;font-size:1.3rem;letter-spacing:4px;margin-bottom:.75rem;text-t
 #stat-atk-val{color:#e07052}
 #stat-def-val{color:#5090e0}
 #stat-turns-val{color:#aaa}
+#stat-steps-val{color:#8ab4f8}
 
 /* LOG */
 #log-wrap{width:100%;max-width:660px;margin-top:.75rem}
