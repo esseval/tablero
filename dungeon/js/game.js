@@ -13,6 +13,7 @@ let G            = null;
 let levels       = [];
 let currentIndex = 0;
 let returnPos    = null;
+let levelCache   = {};
 
 const boardEl = () => document.getElementById('board');
 const logEl   = () => document.getElementById('log');
@@ -120,6 +121,7 @@ function winGame() {
 }
 
 function advanceLevel(player) {
+  levelCache[currentIndex] = { events: G.events };
   returnPos = [...G.pos];
   currentIndex++;
   closeModal();
@@ -141,6 +143,7 @@ function goBackLevel() {
   const prevPlayer = { ...G.player };
   logEl().innerHTML = '';
   G = initState(levels[currentIndex]);
+  if (levelCache[currentIndex]) G.events = levelCache[currentIndex].events;
   G.player = { ...prevPlayer };
   if (returnPos) G.pos = [...returnPos];
   revealAround(G, G.pos[0], G.pos[1]);
@@ -168,6 +171,7 @@ export function restartGame(levelList) {
   levels       = levelList;
   currentIndex = 0;
   returnPos    = null;
+  levelCache   = {};
   closeModal();
   logEl().innerHTML = '';
   G = initState(levels[0]);
