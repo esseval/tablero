@@ -7,13 +7,14 @@ export default {
     player: { hp: 20, maxHp: 20, atk: 5, def: 3, gold: 0 }
   },
   tileset: {
-    floor: { passable: true,  asset: "floor" },
-    wall:  { passable: false, asset: "wall"  },
-    exit:  { passable: true,  asset: "exit"  }
+    floor:    { passable: true,  asset: "floor"    },
+    wall:     { passable: false, asset: "wall"     },
+    exit:     { passable: true,  asset: "exit"     },
+    entrance: { passable: true,  asset: "entrance" }
   },
   map: [
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"],
-    ["wall","floor","floor","floor","wall","floor","floor","floor","floor","floor","floor","wall"],
+    ["wall","entrance","floor","floor","wall","floor","floor","floor","floor","floor","floor","wall"],
     ["wall","floor","wall","floor","wall","floor","wall","wall","floor","wall","floor","wall"],
     ["wall","floor","wall","floor","floor","floor","floor","wall","floor","floor","floor","wall"],
     ["wall","floor","wall","wall","wall","floor","wall","wall","floor","wall","floor","wall"],

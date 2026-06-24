@@ -12,6 +12,7 @@ const log = createLog('log');
 let G            = null;
 let levels       = [];
 let currentIndex = 0;
+let returnPos    = null;
 
 const boardEl = () => document.getElementById('board');
 const logEl   = () => document.getElementById('log');
@@ -88,6 +89,9 @@ export function tryMove(dr, dc) {
     handleEvent(G, eKey, event);
   } else if (tileId === 'exit') {
     winGame();
+  } else if (tileId === 'entrance' && currentIndex > 0) {
+    goBackLevel();
+    return;
   }
 
   render(G, boardEl());
@@ -116,6 +120,7 @@ function winGame() {
 }
 
 function advanceLevel(player) {
+  returnPos = [...G.pos];
   currentIndex++;
   closeModal();
   logEl().innerHTML = '';
@@ -128,6 +133,22 @@ function advanceLevel(player) {
   boardEl().focus();
   log(`Nivel ${currentIndex + 1}: "${G.board.meta.name}"`, 'sys');
   log('Usá WASD / flechas o hacé click en una casilla adyacente para moverte.', 'sys');
+}
+
+function goBackLevel() {
+  closeModal();
+  currentIndex--;
+  const prevPlayer = { ...G.player };
+  logEl().innerHTML = '';
+  G = initState(levels[currentIndex]);
+  G.player = { ...prevPlayer };
+  if (returnPos) G.pos = [...returnPos];
+  revealAround(G, G.pos[0], G.pos[1]);
+  buildBoard(G.board, boardEl(), onCellClick);
+  render(G, boardEl());
+  updateHUD(G);
+  boardEl().focus();
+  log(`Volviste al nivel ${currentIndex + 1}: "${G.board.meta.name}"`, 'sys');
 }
 
 function gameOver() {
@@ -146,6 +167,7 @@ function gameOver() {
 export function restartGame(levelList) {
   levels       = levelList;
   currentIndex = 0;
+  returnPos    = null;
   closeModal();
   logEl().innerHTML = '';
   G = initState(levels[0]);
