@@ -138,6 +138,7 @@ function advanceLevel(player) {
 }
 
 function goBackLevel() {
+  levelCache[currentIndex] = { events: G.events };
   closeModal();
   currentIndex--;
   const prevPlayer = { ...G.player };

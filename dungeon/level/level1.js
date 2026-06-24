@@ -1,10 +1,12 @@
+import { PLAYER_BASE } from '../player.js';
+
 export default {
   meta: {
     name: "La Mazmorra del Olvido",
     rows: 12,
     cols: 12,
     startPos: [1, 1],
-    player: { hp: 20, maxHp: 20, atk: 5, def: 3, gold: 0 }
+    player: { ...PLAYER_BASE }
   },
   tileset: {
     floor:    { passable: true,  asset: "floor"    },
