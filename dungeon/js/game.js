@@ -77,7 +77,7 @@ function handleEvent(state, key, event) {
   if (result.died) { gameOver(); return; }
 
   if (result.shop) {
-    const close = () => { shopOpen = false; };
+    const close = () => { shopOpen = false; boardEl().focus(); };
     const btns = result.shop.items.map(item => ({
       label: itemLabel(item), cls: 'primary', fn: () => { close(); buyItem(item); },
     }));
