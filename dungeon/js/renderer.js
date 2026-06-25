@@ -30,7 +30,8 @@ export function buildBoard(boardData, container, onCellClick, getState) {
         const st = getState();
         if (!st) return;
         const key = `${r},${c}`;
-        if (!st.revealed?.has(key)) return;
+        // Tooltip solo en celdas actualmente visibles (no en las que ya no se ven)
+        if (!st.visible?.has(key)) return;
         const ev = st.events?.[key];
         if (!ev) return;
         if (ev.type === 'enemy') {
@@ -59,13 +60,14 @@ export function render(state, container) {
       const tileId = state.board.map[r][c];
       const tile   = state.board.tileset[tileId];
 
-      if (!state.revealed.has(key)) {
+      // Si la celda no está en el cono de visión actual → niebla total
+      // (a diferencia de state.revealed, state.visible se recalcula en cada turno)
+      if (!state.visible.has(key)) {
         el.className += ' fog';
-        el.innerHTML  = '';
-        continue;
+        el.innerHTML  = '';   // Elimina entidades, fondo, todo
+        continue;             // Salta el render del contenido
       }
 
-      if (!state.visited.has(key)) el.className += ' dim';
       if (tile && !tile.passable)  el.className += ' wall';
 
       const assetId = tile ? tile.asset : 'floor';
