@@ -15,6 +15,7 @@ let levels       = [];
 let currentIndex = 0;
 let returnPos    = null;
 let levelCache   = {};
+let shopOpen     = false;
 
 const boardEl = () => document.getElementById('board');
 const logEl   = () => document.getElementById('log');
@@ -76,10 +77,12 @@ function handleEvent(state, key, event) {
   if (result.died) { gameOver(); return; }
 
   if (result.shop) {
+    const close = () => { shopOpen = false; };
     const btns = result.shop.items.map(item => ({
-      label: itemLabel(item), cls: 'primary', fn: () => buyItem(item),
+      label: itemLabel(item), cls: 'primary', fn: () => { close(); buyItem(item); },
     }));
-    btns.push({ label: 'Salir', cls: '', fn: () => {} });
+    btns.push({ label: 'Salir', cls: '', fn: close });
+    shopOpen = true;
     showModal(result.shop.name, result.shop.msg, btns);
     return;
   }
@@ -91,6 +94,7 @@ function handleEvent(state, key, event) {
 
 export function tryMove(dr, dc) {
   if (!G || G.over) return;
+  if (shopOpen) return;
   if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
@@ -215,6 +219,7 @@ export function restartGame(levelList) {
 
 function onCellClick(r, c) {
   if (!G || G.over) return;
+  if (shopOpen) return;
   const [pr, pc] = G.pos;
   const dr = r - pr, dc = c - pc;
   if (Math.abs(dr) + Math.abs(dc) === 1) tryMove(dr, dc);
