@@ -54,7 +54,7 @@ h1{color:#e8c84a;font-size:1.3rem;letter-spacing:4px;margin-bottom:.75rem;text-t
 #stat-steps-val{color:#8ab4f8}
 
 /* LOG */
-#log-wrap{width:100%;max-width:660px;margin-top:.75rem}
+#log-wrap{width:100%}
 #log{
   background:#0a0a0a;border:1px solid #2a2a2a;border-radius:6px;
   padding:.6rem .8rem;height:115px;overflow-y:auto;

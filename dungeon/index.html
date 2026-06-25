@@ -15,9 +15,17 @@
   <label><button id="btn-import-trigger">Importar tablero</button></label>
   <input type="file" id="file-import" accept=".json">
   <button class="danger" id="btn-restart">Nueva partida</button>
+  <button id="btn-end-turn" class="primary">Terminar turno</button>
 </div>
 
 <div id="layout">
+  <div id="log-wrap">
+    <div id="controls">
+      WASD / ↑↓←→ para moverse &nbsp;|&nbsp; Click en casilla adyacente
+    </div>
+    <div id="log"></div>
+  </div>   
+
   <div id="hud">
     <div class="hud-title">Estado</div>
     <div>
@@ -36,14 +44,9 @@
 
   <div>
     <div id="board" tabindex="0"></div>
-    <div id="controls">
-      WASD / ↑↓←→ para moverse &nbsp;|&nbsp; Click en casilla adyacente
-    </div>
-    <div style="text-align:center;margin-top:.5rem"><button id="btn-end-turn" class="primary">Terminar turno</button></div>
   </div>
-</div>
 
-<div id="log-wrap"><div id="log"></div></div>
+</div>
 
 <div id="overlay">
   <div id="modal">
