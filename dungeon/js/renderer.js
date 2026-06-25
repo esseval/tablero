@@ -11,7 +11,7 @@ export function getEventAssetId(ev) {
   return null;
 }
 
-export function buildBoard(boardData, container, onCellClick) {
+export function buildBoard(boardData, container, onCellClick, getState) {
   const rows = boardData.map.length;
   const cols = boardData.map[0].length;
   container.style.gridTemplateColumns = `repeat(${cols}, 52px)`;
@@ -25,6 +25,20 @@ export function buildBoard(boardData, container, onCellClick) {
       cell.dataset.r = r;
       cell.dataset.c = c;
       cell.addEventListener('click', () => onCellClick(r, c));
+      cell.addEventListener('mouseenter', () => {
+        if (!getState) return;
+        const st = getState();
+        if (!st) return;
+        const key = `${r},${c}`;
+        if (!st.revealed?.has(key)) return;
+        const ev = st.events?.[key];
+        if (!ev) return;
+        if (ev.type === 'enemy') {
+          cell.title = `${ev.data.name} | HP: ${ev.data.hp} ATK: ${ev.data.atk} DEF: ${ev.data.def}`;
+        } else if (ev.type === 'npc') {
+          cell.title = ev.data.name;
+        }
+      });
       container.appendChild(cell);
     }
   }

@@ -158,7 +158,7 @@ function advanceLevel(player) {
   G = initState(levels[currentIndex]);
   G.player = { ...player };
   revealAround(G, G.pos[0], G.pos[1]);
-  buildBoard(G.board, boardEl(), onCellClick);
+  buildBoard(G.board, boardEl(), onCellClick, () => G);
   render(G, boardEl());
   updateHUD(G);
   boardEl().focus();
@@ -177,7 +177,7 @@ function goBackLevel() {
   G.player = { ...prevPlayer };
   if (returnPos) G.pos = [...returnPos];
   revealAround(G, G.pos[0], G.pos[1]);
-  buildBoard(G.board, boardEl(), onCellClick);
+  buildBoard(G.board, boardEl(), onCellClick, () => G);
   render(G, boardEl());
   updateHUD(G);
   boardEl().focus();
@@ -207,7 +207,7 @@ export function restartGame(levelList) {
   logEl().innerHTML = '';
   G = initState(levels[0]);
   revealAround(G, G.pos[0], G.pos[1]);
-  buildBoard(G.board, boardEl(), onCellClick);
+  buildBoard(G.board, boardEl(), onCellClick, () => G);
   render(G, boardEl());
   updateHUD(G);
   boardEl().focus();
