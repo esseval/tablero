@@ -86,4 +86,33 @@ export function render(state, container) {
       }
     }
   }
+
+  renderMinimap(state);
+}
+
+function renderMinimap(state) {
+  const canvas = document.getElementById('minimap');
+  if (!canvas) return;
+  const rows = state.board.map.length;
+  const cols = state.board.map[0].length;
+  canvas.width  = cols;
+  canvas.height = rows;
+  const ctx = canvas.getContext('2d');
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const key = `${r},${c}`;
+      if (!state.revealed.has(key)) {
+        ctx.fillStyle = '#000';
+      } else if (state.board.map[r][c] === 'wall') {
+        ctx.fillStyle = '#4a3828';
+      } else if (state.board.map[r][c] === 'exit') {
+        ctx.fillStyle = '#1a9a3a';
+      } else {
+        ctx.fillStyle = '#2a2a2a';
+      }
+      ctx.fillRect(c, r, 1, 1);
+    }
+  }
+  ctx.fillStyle = '#4a90d9';
+  ctx.fillRect(state.pos[1], state.pos[0], 1, 1);
 }
