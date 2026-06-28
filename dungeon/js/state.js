@@ -1,5 +1,6 @@
 export function initState(boardData) {
   const m = boardData.meta;
+  console.log(m);
   return {
     board:    boardData,
     player:   { ...m.player },

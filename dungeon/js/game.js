@@ -49,7 +49,7 @@ function buyItem(item) {
 
 export function rollDice() {
   if (!G || G.over) return;
-  const n = G.player.dice || 1;
+  const n = G.player.moveDice || 1;
   let total = 0;
   const parts = [];
   for (let i = 0; i < n; i++) {
