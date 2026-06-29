@@ -10,6 +10,22 @@ function rollDice(count) {
   return sum;
 }
 
+export function xpThreshold(level) {
+  return level * 50;
+}
+
+export function checkLevelUp(p) {
+  let leveled = false;
+  while (p.xp >= xpThreshold(p.level)) {
+    p.xp -= xpThreshold(p.level);
+    p.level++;
+    p.maxHp += 2;
+    p.hp = Math.min(p.hp + 2, p.maxHp);
+    leveled = true;
+  }
+  return leveled;
+}
+
 export function resolveCombat(state, enemy) {
   const p     = state.player;
   const lines = [];
@@ -29,9 +45,12 @@ export function resolveCombat(state, enemy) {
   }
 
   if (p.hp > 0) {
+    const xpGained = enemy.xp || 1;
     p.gold += enemy.gold;
-    lines.push({ cls: 'loot', txt: `✓ Derrotaste a ${enemy.name}. +${enemy.gold} oro` });
-    return { won: true, lines };
+    p.xp += xpGained;
+    const leveledUp = checkLevelUp(p);
+    lines.push({ cls: 'loot', txt: `✓ Derrotaste a ${enemy.name}. +${enemy.gold} oro  +${xpGained} XP` });
+    return { won: true, lines, xpGained, leveledUp, newLevel: p.level };
   }
   lines.push({ cls: 'dead', txt: `✗ Fuiste derrotado por ${enemy.name}.` });
   return { won: false, lines };

@@ -6,7 +6,7 @@ import { updateHUD }             from './hud.js';
 import { showModal, closeModal } from '../../shared/modal.js';
 import { createLog }             from '../../shared/log.js';
 import { download, readJSON }    from '../../shared/storage.js';
-import { roll }                  from './combat.js';
+import { roll, checkLevelUp }    from './combat.js';
 
 const log = createLog('log');
 
@@ -73,6 +73,8 @@ function handleEvent(state, key, event) {
 
   if (result.lines) result.lines.forEach(l => log(l.txt, l.cls));
   if (result.msg)   log(result.msg, result.cls);
+  if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
+  if (result.leveledUp) log(`⭐ ¡Subiste al nivel ${result.newLevel}! +2 HP máximo`, 'ok');
 
   if (result.died) { gameOver(); return; }
 
@@ -131,19 +133,24 @@ export function tryMove(dr, dc) {
 // ── lifecycle ─────────────────────────────────────────────────────────────
 
 function winGame() {
-  G.over    = true;
+  G.over = true;
+  G.player.xp += 1;
+  const leveledUp = checkLevelUp(G.player);
+  if (leveledUp) log(`⭐ ¡Subiste al nivel ${G.player.level}! +2 HP máximo`, 'ok');
+  updateHUD(G);
+
   const next = currentIndex + 1;
   if (next < levels.length) {
     showModal(
       `¡Nivel ${currentIndex + 1} superado!`,
-      `Avanzás al nivel ${next + 1}.\n\nTurnos: ${G.turns} | Oro: ${G.player.gold} | HP: ${G.player.hp}/${G.player.maxHp}`,
+      `Avanzás al nivel ${next + 1}.\n\nTurnos: ${G.turns} | Oro: ${G.player.gold} | HP: ${G.player.hp}/${G.player.maxHp} | Nivel: ${G.player.level}`,
       [{ label: `Nivel ${next + 1} →`, cls: 'primary', fn: () => advanceLevel(G.player) }]
     );
   } else {
     G.won = true;
     showModal(
       '¡Victoria Total!',
-      `Conquistaste la mazmorra completa.\n\nTurnos: ${G.turns} | Oro: ${G.player.gold} | HP: ${G.player.hp}/${G.player.maxHp}`,
+      `Conquistaste la mazmorra completa.\n\nTurnos: ${G.turns} | Oro: ${G.player.gold} | HP: ${G.player.hp}/${G.player.maxHp} | Nivel: ${G.player.level}`,
       [{ label: 'Nueva partida', cls: 'primary', fn: () => restartGame(levels) }]
     );
   }

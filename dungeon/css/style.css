@@ -46,8 +46,11 @@ h1{color:#e8c84a;font-size:1.3rem;letter-spacing:4px;margin-bottom:.75rem;text-t
 .bar-wrap{background:#222;height:7px;border-radius:4px;overflow:hidden;margin-top:3px}
 .bar{height:100%;border-radius:4px;transition:width .3s}
 .bar-hp{background:#c0392b}
+.bar-xp{background:#7b52e0}
 #stat-hp-val{color:#e05252}
 #stat-gold-val{color:#e8c84a}
+#stat-level-val{color:#b07de8}
+.stat-xp{color:#9a6de0;font-size:.85rem}
 #stat-atk-val{color:#e07052}
 #stat-def-val{color:#5090e0}
 #stat-turns-val{color:#aaa}

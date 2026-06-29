@@ -40,7 +40,7 @@ export default {
     "6,6": { type:"enemy",    data:{ id:"goblin",   name:"Goblin Merodeador",hp:9,  maxHp:9,  atk:4, def:2, gold:6,  xp:8  }},
     "1,6": { type:"treasure", data:{ gold:12, msg:"Un cofre polvoriento. ¡12 monedas de oro!" }},
     "3,9": { type:"treasure", data:{ gold:8,  msg:"Monedas dispersas por el suelo. +8 oro" }},
-    "7,9": { type:"treasure", data:{ gold:20, msg:"Un cofre sellado. ¡20 monedas de oro!" }},
+    "7,9": { type:"treasure", data:{ gold:20, msg:"Un cofre sellado. ¡20 monedas de oro!", xp:5 }},
     "1,9": { type:"potion",   data:{ hp:8,   msg:"Una poción de vida. Recuperás 8 HP." }},
     "6,5": { type:"potion",   data:{ hp:6,   msg:"Una poción débil. Recuperás 6 HP." }},
     "9,2": { type:"potion",   data:{ hp:10,  msg:"Una poción fuerte. Recuperás 10 HP." }},
