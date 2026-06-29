@@ -1,5 +1,7 @@
 # Ejercicios — Dungeon Explorer
 
+✅ = implementado &nbsp;&nbsp;—&nbsp;&nbsp; ☐ = pendiente
+
 Cada ejercicio propone una mejora concreta al juego. Están ordenados de menor
 a mayor complejidad. Los ejemplos muestran el punto de partida y una dirección
 posible, no la solución completa.
@@ -8,7 +10,7 @@ Con la arquitectura modular ES6, cada ejercicio indica en qué módulo(s) trabaj
 
 ---
 
-## 1. Venta de armadura en el NPC
+☐ ## 1. Venta de armadura en el NPC
 
 **Objetivo:** Extender el sistema de compra para mejorar la defensa del jugador,
 siguiendo el mismo patrón que las armas.
@@ -33,7 +35,7 @@ if (item.type === 'armor') return `${item.name} +${item.def} DEF (${item.price} 
 
 ---
 
-## 2. Límite de compras por ítem
+☐ ## 2. Límite de compras por ítem
 
 **Objetivo:** Que cada ítem del NPC solo pueda comprarse una cantidad limitada de veces,
 evitando que el jugador acumule stats infinitos.
@@ -58,7 +60,7 @@ npc(state, key, data) {
 
 ---
 
-## 3. Sistema de XP y nivel del jugador
+☐ ## 3. Sistema de XP y nivel del jugador
 
 **Objetivo:** Que el jugador acumule experiencia al derrotar enemigos y suba de nivel,
 incrementando sus stats automáticamente.
@@ -99,7 +101,7 @@ document.getElementById('stat-xp-val').textContent = `${p.xp} / ${p.level * 20}`
 
 ---
 
-## 4. Guardado automático con localStorage
+☐ ## 4. Guardado automático con localStorage
 
 **Objetivo:** Persistir el estado de la partida para que el jugador pueda cerrar
 el browser y continuar desde donde estaba.
@@ -135,7 +137,7 @@ function loadGame() {
 
 ---
 
-## 5. Minimapa
+✅ ## 5. Minimapa
 
 **Objetivo:** Mostrar un minimapa en el HUD que revele las celdas visitadas
 como píxeles de colores.
@@ -177,7 +179,7 @@ renderMinimap(state);
 
 ---
 
-## 6. Movimiento de enemigos
+☐ ## 6. Movimiento de enemigos
 
 **Objetivo:** Que los enemigos se muevan un paso por turno hacia el jugador
 cuando están dentro del rango de visión.
@@ -210,7 +212,7 @@ function moveEnemies() {
 
 ---
 
-## 7. Nuevo tipo de tile: agua
+☐ ## 7. Nuevo tipo de tile: agua
 
 **Objetivo:** Agregar un tile de agua que sea pasable pero cause 1 de daño por turno.
 
@@ -242,7 +244,7 @@ if (tileId === 'water') {
 
 ---
 
-## 8. Animación de daño
+☐ ## 8. Animación de daño
 
 **Objetivo:** Mostrar un flash rojo en la celda del jugador al recibir daño
 y un flash amarillo al recoger oro.
@@ -277,7 +279,7 @@ if (result.cls === 'loot')   flashCell(G.pos[0], G.pos[1], 'flash-loot');
 
 ---
 
-## 9. Descripción emergente al pasar el mouse
+✅ ## 9. Descripción emergente al pasar el mouse
 
 **Objetivo:** Mostrar un tooltip con el nombre y stats del enemigo
 al hacer hover sobre una celda visible.
@@ -309,7 +311,7 @@ cell.addEventListener('mouseenter', e => {
 
 ---
 
-## 10. Editor de niveles en el browser
+☐ ## 10. Editor de niveles en el browser
 
 **Objetivo:** Agregar un modo "editor" que permita diseñar un nivel visualmente
 haciendo click en las celdas para cambiar su tipo, y exportarlo como JSON.
