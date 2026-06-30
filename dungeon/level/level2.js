@@ -29,7 +29,7 @@ export default {
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"]
   ],
   events: {
-    "2,1": { type:"enemy",    data:{ id:"rat",      name:"Rata Rabiosa",   hp:10, maxHp:10, atk:4, def:1, gold:4,  xp:8  }},
+    "2,1": { type:"enemy",    data:{ id:"spider",      name:"Araña Venenosa",   hp:10, maxHp:10, atk:4, def:1, gold:4,  xp:8  }},
     "3,3": { type:"enemy",    data:{ id:"skeleton", name:"Esqueleto",      hp:14, maxHp:14, atk:6, def:3, gold:9,  xp:13 }},
     "5,1": { type:"enemy",    data:{ id:"skeleton", name:"Esqueleto Jefe", hp:18, maxHp:18, atk:7, def:4, gold:12, xp:16 }},
     "5,5": { type:"enemy",    data:{ id:"troll",    name:"Troll",          hp:20, maxHp:20, atk:8, def:5, gold:16, xp:22 }},

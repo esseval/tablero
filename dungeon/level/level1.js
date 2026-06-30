@@ -29,8 +29,8 @@ export default {
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"]
   ],
   events: {
-    "2,1": { type:"enemy",    data:{ id:"rat",      name:"Rata",         hp:6,  maxHp:6,  atk:3, def:1, gold:3,  xp:5  }},
-    "3,5": { type:"enemy",    data:{ id:"rat",      name:"Rata Gigante", hp:8,  maxHp:8,  atk:4, def:1, gold:4,  xp:7  }},
+    "2,1": { type:"enemy",    data:{ id:"spider",      name:"Araña",         hp:6,  maxHp:6,  atk:3, def:1, gold:3,  xp:5  }},
+    "3,5": { type:"enemy",    data:{ id:"spider",      name:"Araña Gigante", hp:8,  maxHp:8,  atk:4, def:1, gold:4,  xp:7  }},
     "5,3": { type:"enemy",    data:{ id:"skeleton", name:"Esqueleto",    hp:12, maxHp:12, atk:5, def:3, gold:8,  xp:12 }},
     "7,5": { type:"enemy",    data:{ id:"skeleton", name:"Esqueleto",    hp:10, maxHp:10, atk:6, def:2, gold:7,  xp:10 }},
     "5,8": { type:"enemy",    data:{ id:"troll",    name:"Troll",        hp:18, maxHp:18, atk:7, def:5, gold:15, xp:20 }},
