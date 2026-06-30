@@ -71,16 +71,16 @@ export function render(state, container) {
       if (tile && !tile.passable)  el.className += ' wall';
 
       const assetId = tile ? tile.asset : 'floor';
-      el.innerHTML = `<img class="cell-bg" src="assets/${assetId}.svg" alt="">`;
+      el.innerHTML = `<img class="cell-bg" src="assets/${assetId}.png" alt="">`;
 
       if (r === pr && c === pc) {
-        el.innerHTML += `<div class="cell-entity"><img src="assets/player.svg" alt="Jugador"></div>`;
+        el.innerHTML += `<div class="cell-entity"><img src="assets/player.png" alt="Jugador"></div>`;
       } else {
         const ev = state.events[key];
         if (ev) {
           const entityId = getEventAssetId(ev);
           if (entityId) {
-            el.innerHTML += `<div class="cell-entity"><img src="assets/${entityId}.svg" alt="${ev.type}"></div>`;
+            el.innerHTML += `<div class="cell-entity"><img src="assets/${entityId}.png" alt="${ev.type}"></div>`;
           }
         }
       }

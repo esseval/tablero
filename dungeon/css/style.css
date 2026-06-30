@@ -26,7 +26,7 @@ h1{color:#e8c84a;font-size:1.3rem;letter-spacing:4px;margin-bottom:.75rem;text-t
 
 .cell-bg,.cell-entity{position:absolute;inset:0;width:100%;height:100%}
 .cell-entity{display:flex;align-items:center;justify-content:center}
-.cell-entity svg{width:65%;height:65%}
+.cell-entity img {width:80%;height:80%}
 
 /* fog states */
 .cell.fog .cell-bg,.cell.fog .cell-entity{visibility:hidden}
