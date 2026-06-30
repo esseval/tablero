@@ -6,7 +6,7 @@ import { updateHUD }             from './hud.js';
 import { showModal, closeModal } from '../../shared/modal.js';
 import { createLog }             from '../../shared/log.js';
 import { download, readJSON }    from '../../shared/storage.js';
-import { roll, checkLevelUp }    from './combat.js';
+import { roll, checkLevelUp, resolveAttackRound } from './combat.js';
 
 const log = createLog('log');
 
@@ -106,6 +106,10 @@ export function tryMove(dr, dc) {
   const tileId = map[nr][nc];
   const tile   = G.board.tileset[tileId];
   if (!tile || !tile.passable) return;
+
+  // Los enemigos bloquean el paso
+  const targetEvent = G.events[`${nr},${nc}`];
+  if (targetEvent?.type === 'enemy') return;
 
   G.pos = [nr, nc];
   G.stepsRemaining--;
@@ -222,6 +226,32 @@ export function restartGame(levelList) {
   rollDice();
 }
 
+// ── attack ─────────────────────────────────────────────────────────────────
+
+function tryAttack(dr, dc) {
+  if (!G || G.over) return;
+  if (shopOpen) return;
+  const [r, c] = G.pos;
+  const nr = r + dr, nc = c + dc;
+  const key = `${nr},${nc}`;
+  const event = G.events[key];
+  if (!event || event.type !== 'enemy') return;
+
+  const result = resolveAttackRound(G, event.data);
+
+  if (result.lines) result.lines.forEach(l => log(l.txt, l.cls));
+  if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
+  if (result.leveledUp) log(`⭐ ¡Subiste al nivel ${result.newLevel}! +2 HP máximo`, 'ok');
+
+  if (result.died) {
+    if (result.playerDied) { delete G.events[key]; render(G, boardEl()); updateHUD(G); gameOver(); return; }
+    delete G.events[key];
+  }
+
+  render(G, boardEl());
+  updateHUD(G);
+}
+
 // ── input (click) ─────────────────────────────────────────────────────────
 
 function onCellClick(r, c) {
@@ -229,7 +259,15 @@ function onCellClick(r, c) {
   if (shopOpen) return;
   const [pr, pc] = G.pos;
   const dr = r - pr, dc = c - pc;
-  if (Math.abs(dr) + Math.abs(dc) === 1) tryMove(dr, dc);
+  if (Math.abs(dr) + Math.abs(dc) !== 1) return;
+
+  const key = `${r},${c}`;
+  const ev = G.events[key];
+  if (ev?.type === 'enemy') {
+    tryAttack(dr, dc);
+  } else {
+    tryMove(dr, dc);
+  }
 }
 
 // ── I/O ───────────────────────────────────────────────────────────────────
