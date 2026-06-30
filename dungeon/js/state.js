@@ -13,6 +13,8 @@ export function initState(boardData) {
     revealed: new Set(),
     // visible: celdas visibles en el turno actual (se recalcula desde cero en cada movimiento)
     visible:  new Set(),
+    // dim: key -> distancia Chebyshev (0, 1, 2) para dimming gradual
+    dim:      new Map(),
     stepsRemaining: 0,
     over:     false,
     won:      false,

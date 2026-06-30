@@ -109,7 +109,7 @@ export function tryMove(dr, dc) {
 
   G.pos = [nr, nc];
   G.stepsRemaining--;
-  revealAround(G, nr, nc);
+  revealAround(G, nr, nc, G.player.visionRange);
 
   const eKey  = `${nr},${nc}`;
   const event = G.events[eKey];
@@ -164,7 +164,7 @@ function advanceLevel(player) {
   logEl().innerHTML = '';
   G = initState(levels[currentIndex]);
   G.player = { ...player };
-  revealAround(G, G.pos[0], G.pos[1]);
+  revealAround(G, G.pos[0], G.pos[1], G.player.visionRange);
   buildBoard(G.board, boardEl(), onCellClick, () => G);
   render(G, boardEl());
   updateHUD(G);
@@ -183,7 +183,7 @@ function goBackLevel() {
   if (levelCache[currentIndex]) G.events = levelCache[currentIndex].events;
   G.player = { ...prevPlayer };
   if (returnPos) G.pos = [...returnPos];
-  revealAround(G, G.pos[0], G.pos[1]);
+  revealAround(G, G.pos[0], G.pos[1], G.player.visionRange);
   buildBoard(G.board, boardEl(), onCellClick, () => G);
   render(G, boardEl());
   updateHUD(G);
@@ -213,7 +213,7 @@ export function restartGame(levelList) {
   closeModal();
   logEl().innerHTML = '';
   G = initState(levels[0]);
-  revealAround(G, G.pos[0], G.pos[1]);
+  revealAround(G, G.pos[0], G.pos[1], G.player.visionRange);
   buildBoard(G.board, boardEl(), onCellClick, () => G);
   render(G, boardEl());
   updateHUD(G);

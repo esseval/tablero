@@ -31,8 +31,8 @@ h1{color:#e8c84a;font-size:1.3rem;letter-spacing:4px;margin-bottom:.75rem;text-t
 /* fog states */
 .cell.fog .cell-bg,.cell.fog .cell-entity{visibility:hidden}
 .cell.fog{background:#000}
-.cell.dim .cell-entity{opacity:.5}
-.cell.dim::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.45);pointer-events:none}
+.cell.dim .cell-entity{opacity:var(--entity-opacity, .5)}
+.cell.dim::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,var(--overlay-opacity, .45));pointer-events:none}
 
 /* HUD */
 #hud{

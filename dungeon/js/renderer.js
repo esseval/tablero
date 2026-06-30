@@ -68,6 +68,14 @@ export function render(state, container) {
         continue;             // Salta el render del contenido
       }
 
+      const dist = state.dim.get(key);
+      if (dist !== undefined) {
+        const dimFactor = (dist - 1) * 0.35;
+        el.style.setProperty('--entity-opacity', 1 - dimFactor);
+        el.style.setProperty('--overlay-opacity', dimFactor);
+        el.className += ' dim';
+      }
+
       if (tile && !tile.passable)  el.className += ' wall';
 
       const assetId = tile ? tile.asset : 'floor';

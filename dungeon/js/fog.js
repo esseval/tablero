@@ -1,11 +1,12 @@
 // Revela las celdas visibles desde (r, c) en un radio dado.
 // Puebla state.visible (solo este turno) y state.revealed (acumulativo).
 // La línea de visión se corta al encontrar una pared, ocultando lo que está detrás.
-export function revealAround(state, r, c, radius = 2) {
+export function revealAround(state, r, c, radius) {
   state.visited.add(`${r},${c}`);
 
   // Limpia la visibilidad del turno anterior; se recalcula desde cero
   state.visible = new Set();
+  state.dim     = new Map();
 
   for (let dr = -radius; dr <= radius; dr++) {
     for (let dc = -radius; dc <= radius; dc++) {
@@ -16,10 +17,13 @@ export function revealAround(state, r, c, radius = 2) {
 
       // La celda del jugador siempre se ve; las demas necesitan linea de vision
       if (dr === 0 && dc === 0 || hasLineOfSight(state, r, c, tr, tc)) {
+        const key = `${tr},${tc}`;
         // revealed: queda para siempre (minimapa, estadisticas)
-        state.revealed.add(`${tr},${tc}`);
+        state.revealed.add(key);
         // visible: solo para este turno — se borra arriba en cada llamado
-        state.visible.add(`${tr},${tc}`);
+        state.visible.add(key);
+        // dim: almacena distancia Chebyshev para dimming gradual (25% menos por cada celda)
+        state.dim.set(key, Math.max(Math.abs(dr), Math.abs(dc)));
       }
     }
   }
