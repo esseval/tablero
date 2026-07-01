@@ -86,9 +86,14 @@ export function render(state, container) {
       } else {
         const ev = state.events[key];
         if (ev) {
-          const entityId = getEventAssetId(ev);
-          if (entityId) {
-            el.innerHTML += `<div class="cell-entity"><img src="assets/${entityId}.png" alt="${ev.type}"></div>`;
+          // Trap/potion ocultos hasta que la acción Buscar los revele
+          if ((ev.type === 'potion' || ev.type === 'trap') && !state.searched.has(key)) {
+            // no renderizar entidad
+          } else {
+            const entityId = getEventAssetId(ev);
+            if (entityId) {
+              el.innerHTML += `<div class="cell-entity"><img src="assets/${entityId}.png" alt="${ev.type}"></div>`;
+            }
           }
         }
       }

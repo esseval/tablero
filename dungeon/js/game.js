@@ -283,6 +283,35 @@ function tryAttack(dr, dc) {
   updateHUD(G);
 }
 
+// ── search ─────────────────────────────────────────────────────────────────
+
+function trySearch(dr, dc) {
+  if (!G || G.over) return;
+  if (shopOpen) return;
+  const [r, c] = G.pos;
+  const nr = r + dr, nc = c + dc;
+  const key = `${nr},${nc}`;
+  const event = G.events[key];
+  if (!event || (event.type !== 'potion' && event.type !== 'trap')) return;
+  if (G.searched.has(key)) return;
+
+  // TODO: calcular probabilidad según player.searchChance
+  const success = true;
+
+  if (!success) {
+    log('🔍 No encontraste nada.', 'sys');
+    render(G, boardEl());
+    updateHUD(G);
+    return;
+  }
+
+  G.searched.add(key);
+  const label = event.type === 'potion' ? 'una poción' : 'una trampa';
+  log(`🔍 ¡Encontraste ${label}!`, 'ok');
+  render(G, boardEl());
+  updateHUD(G);
+}
+
 // ── input (click) ─────────────────────────────────────────────────────────
 
 function onCellClick(r, c) {
@@ -298,6 +327,8 @@ function onCellClick(r, c) {
     tryAttack(dr, dc);
   } else if (ev?.type === 'treasure') {
     tryOpen(dr, dc);
+  } else if (ev && (ev.type === 'potion' || ev.type === 'trap') && !G.searched.has(key)) {
+    trySearch(dr, dc);
   } else {
     tryMove(dr, dc);
   }
