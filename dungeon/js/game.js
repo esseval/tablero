@@ -107,9 +107,9 @@ export function tryMove(dr, dc) {
   const tile   = G.board.tileset[tileId];
   if (!tile || !tile.passable) return;
 
-  // Los enemigos bloquean el paso
+  // Enemigos y cofres bloquean el paso
   const targetEvent = G.events[`${nr},${nc}`];
-  if (targetEvent?.type === 'enemy') return;
+  if (targetEvent?.type === 'enemy' || targetEvent?.type === 'treasure') return;
 
   G.pos = [nr, nc];
   G.stepsRemaining--;
@@ -226,6 +226,37 @@ export function restartGame(levelList) {
   rollDice();
 }
 
+// ── open (treasure) ────────────────────────────────────────────────────────
+
+function tryOpen(dr, dc) {
+  if (!G || G.over) return;
+  if (shopOpen) return;
+  const [r, c] = G.pos;
+  const nr = r + dr, nc = c + dc;
+  const key = `${nr},${nc}`;
+  const event = G.events[key];
+  if (!event || event.type !== 'treasure') return;
+
+  // TODO: calcular probabilidad según player.openChance
+  const success = true;
+
+  if (!success) {
+    log('🔒 Fallaste al abrir el cofre.', 'danger');
+    render(G, boardEl());
+    updateHUD(G);
+    return;
+  }
+
+  const result = EVENT_HANDLERS.treasure(G, key, event.data);
+
+  if (result.msg) log(result.msg, result.cls);
+  if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
+  if (result.leveledUp) log(`⭐ ¡Subiste al nivel ${result.newLevel}! +2 HP máximo`, 'ok');
+
+  render(G, boardEl());
+  updateHUD(G);
+}
+
 // ── attack ─────────────────────────────────────────────────────────────────
 
 function tryAttack(dr, dc) {
@@ -265,6 +296,8 @@ function onCellClick(r, c) {
   const ev = G.events[key];
   if (ev?.type === 'enemy') {
     tryAttack(dr, dc);
+  } else if (ev?.type === 'treasure') {
+    tryOpen(dr, dc);
   } else {
     tryMove(dr, dc);
   }
