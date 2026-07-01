@@ -47,7 +47,8 @@ export default {
     "8,10":{ type:"potion",   data:{ hp:15,  msg:"Una poción élfica. Recuperás 15 HP." }},
     "7,3": { type:"npc",     data:{ name:"Hechicero Neutral", msg:"Pocos llegan hasta aquí. Te vendo esto por lo que vale.", items:[
       { type:"potion", hp:15,  price:18 },
-      { type:"weapon", name:"Espada mágica", atk:3, price:38 }
+      { type:"weapon", name:"Espada mágica", atk:3, price:38 }, 
+      { type:"armor",  name:"Botas de cuero", def:1, price:15 }
     ]}},
     "2,4": { type:"trap",     data:{ dmg:6,  msg:"¡Suelo con runas malditas! Recibís 6 de daño." }},
     "5,9": { type:"trap",     data:{ dmg:8,  msg:"¡Una trampa arcana! Recibís 8 de daño." }},
