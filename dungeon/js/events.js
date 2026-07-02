@@ -34,6 +34,7 @@ export const EVENT_HANDLERS = {
     return { msg: `🩸 ${data.msg} (HP: ${Math.max(0, p.hp)}/${p.maxHp})`, cls: 'danger', died: p.hp <= 0 };
   },
   npc(state, key, data) {
-    return { shop: data };
+    const available = data.items.filter(item => item.stock === undefined || item.stock > 0);
+    return { shop: { ...data, items: available } };    
   },
 };

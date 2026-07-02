@@ -45,10 +45,10 @@ export default {
     "6,5": { type:"potion",   data:{ hp:6,   msg:"Una poción débil. Recuperás 6 HP." }},
     "9,2": { type:"potion",   data:{ hp:10,  msg:"Una poción fuerte. Recuperás 10 HP." }},
     "1,3": { type:"npc",     data:{ name:"Mercader Errante", msg:"¡Bienvenido, aventurero! ¿Qué necesitás?", items:[
-      { type:"potion", hp:10,  price:8,  },
-      { type:"weapon", name:"Daga oxidada",  atk:1, price:12 },
-      { type:"armor",  name:"Escudo de madera", def:1, price:15 }, 
-      { type:"armor",  name:"Cota de malla", def:2, price:20 }
+      { type:"potion", hp:10,  price:8, stock: 5 },
+      { type:"weapon", name:"Daga oxidada",  atk:1, price:12, stock: 2 },
+      { type:"armor",  name:"Escudo de madera", def:1, price:15, stock: 1 }, 
+      { type:"armor",  name:"Cota de malla", def:2, price:20, stock: 1 }
     ]}},
     "2,9": { type:"trap",     data:{ dmg:4,  msg:"¡Una trampa de pinchos! Recibís 4 de daño." }},
     "4,8": { type:"trap",     data:{ dmg:6,  msg:"¡El suelo cede! Caés y recibís 6 de daño." }},

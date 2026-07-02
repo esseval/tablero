@@ -45,9 +45,9 @@ export default {
     "5,10":{ type:"potion",   data:{ hp:8,   msg:"Una poción herbal. Recuperás 8 HP." }},
     "9,8": { type:"potion",   data:{ hp:12,  msg:"Una poción fuerte. Recuperás 12 HP." }},
     "5,9": { type:"npc",     data:{ name:"Alquimista", msg:"Las sombras son peligrosas. Tengo lo que necesitás.", items:[
-      { type:"potion", hp:12,  price:12 },
-      { type:"weapon", name:"Espada corta", atk:2, price:22 }, 
-      { type:"armor",  name:"Casco de cuero", def:1, price:15 }
+      { type:"potion", hp:12,  price:12, stock: 5 },
+      { type:"weapon", name:"Espada corta", atk:2, price:22, stock: 1 }, 
+      { type:"armor",  name:"Casco de cuero", def:1, price:15, stock: 1 }
     ]}},
     "2,7": { type:"trap",     data:{ dmg:5,  msg:"¡Una trampa de flechas! Recibís 5 de daño." }},
     "6,5": { type:"trap",     data:{ dmg:7,  msg:"¡Una trampa de ácido! Recibís 7 de daño." }},

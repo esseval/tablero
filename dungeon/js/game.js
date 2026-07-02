@@ -31,6 +31,7 @@ function itemLabel(item) {
 
 function buyItem(item) {
   if (G.player.gold < item.price) { log('No tenés oro suficiente.', 'danger'); return; }
+  if (item.stock !== undefined) item.stock--;
   G.player.gold -= item.price;
   if (item.type === 'potion') {
     G.player.hp = Math.min(G.player.hp + item.hp, G.player.maxHp);
