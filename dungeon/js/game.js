@@ -241,6 +241,7 @@ export function restartGame(levelList) {
 function tryOpen(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
   const key = `${nr},${nc}`;
@@ -288,6 +289,7 @@ function resolveCombatAt(key, enemy) {
 function tryAttack(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
   const key = `${nr},${nc}`;
@@ -342,6 +344,7 @@ function moveEnemies() {
 export function trySearch() {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.stepsRemaining <= 0) return;
 
   const found = [];
   for (const key of G.visible) {
