@@ -22,12 +22,14 @@ export const EVENT_HANDLERS = {
     return { msg: '💰 ' + data.msg, cls: 'loot', xpGained, leveledUp, newLevel: state.player.level };
   },
   potion(state, key, data) {
+    if (data.hidden !== false && !state.searched.has(key)) return {};
     const p = state.player;
     p.hp = Math.min(p.hp + data.hp, p.maxHp);
     delete state.events[key];
     return { msg: `🧪 ${data.msg} (HP: ${p.hp}/${p.maxHp})`, cls: 'ok' };
   },
   trap(state, key, data) {
+    if (data.hidden !== false && !state.searched.has(key)) return {};
     const p = state.player;
     p.hp -= data.dmg;
     delete state.events[key];
