@@ -4,7 +4,7 @@ export function roll(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function rollDice(count) {
+export function rollSum(count) {
   let sum = 0;
   for (let i = 0; i < count; i++) sum += roll(1, DICE_SIDES);
   return sum;
@@ -32,7 +32,7 @@ export function resolveAttackRound(state, enemy) {
   const p     = state.player;
   const lines = [];
 
-  const atkRoll = rollDice(p.atkDice || 1);
+  const atkRoll = rollSum(p.atkDice || 1);
   const pDmg = Math.max(0, (p.atk + atkRoll) - enemy.def);
   enemy.hp -= pDmg;
   lines.push({ cls: 'combat', txt: `⚔ Atacas: ${p.atk}+${atkRoll} → ${pDmg} daño → ${enemy.name} HP: ${Math.max(0, enemy.hp)}` });
@@ -47,7 +47,7 @@ export function resolveAttackRound(state, enemy) {
     return { died: true, lines, xpGained, leveledUp, newLevel: p.level };
   }
 
-  const defRoll = rollDice(p.defDice || 1);
+  const defRoll = rollSum(p.defDice || 1);
   const eDmg = Math.max(0, (enemy.atk + roll(0, 3)) - (p.def + defRoll));
   p.hp -= eDmg;
   lines.push({ cls: 'combat', txt: `  ${enemy.name} contraataca: ${eDmg} daño → Tu HP: ${Math.max(0, p.hp)} (DEF:${p.def}+${defRoll})` });

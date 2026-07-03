@@ -6,7 +6,7 @@ import { updateHUD }             from './hud.js';
 import { showModal, closeModal } from '../../shared/modal.js';
 import { createLog }             from '../../shared/log.js';
 import { download, readJSON }    from '../../shared/storage.js';
-import { roll, checkLevelUp, resolveAttackRound } from './combat.js';
+import { roll, checkLevelUp, resolveAttackRound, rollSum } from './combat.js';
 
 const log = createLog('log');
 
@@ -126,6 +126,8 @@ export function tryMove(dr, dc) {
     goBackLevel();
     return;
   }
+
+  if (!G.over) moveEnemies();
 
   render(G, boardEl());
   updateHUD(G);
@@ -260,6 +262,22 @@ function tryOpen(dr, dc) {
 
 // ── attack ─────────────────────────────────────────────────────────────────
 
+// Resuelve un asalto contra el enemigo en `key`. Retorna true si el jugador
+// murió (y ya disparó gameOver), para que el que llama corte lo que sigue.
+function resolveCombatAt(key, enemy) {
+  const result = resolveAttackRound(G, enemy);
+
+  if (result.lines) result.lines.forEach(l => log(l.txt, l.cls));
+  if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
+  if (result.leveledUp) log(`⭐ ¡Subiste al nivel ${result.newLevel}! +2 HP máximo`, 'ok');
+
+  if (result.died) {
+    delete G.events[key];
+    if (result.playerDied) { render(G, boardEl()); updateHUD(G); gameOver(); return true; }
+  }
+  return false;
+}
+
 function tryAttack(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
@@ -269,19 +287,47 @@ function tryAttack(dr, dc) {
   const event = G.events[key];
   if (!event || event.type !== 'enemy') return;
 
-  const result = resolveAttackRound(G, event.data);
-
-  if (result.lines) result.lines.forEach(l => log(l.txt, l.cls));
-  if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
-  if (result.leveledUp) log(`⭐ ¡Subiste al nivel ${result.newLevel}! +2 HP máximo`, 'ok');
-
-  if (result.died) {
-    if (result.playerDied) { delete G.events[key]; render(G, boardEl()); updateHUD(G); gameOver(); return; }
-    delete G.events[key];
-  }
+  if (resolveCombatAt(key, event.data)) return;
 
   render(G, boardEl());
   updateHUD(G);
+}
+
+// ── enemy AI ─────────────────────────────────────────────────────────────────
+
+// Avanza los enemigos revelados un número de pasos (moveDice) hacia el
+// jugador. El que termina adyacente ataca de inmediato.
+function moveEnemies() {
+  const [pr, pc] = G.pos;
+
+  for (const [startKey, ev] of Object.entries(G.events)) {
+    if (ev.type !== 'enemy' || !G.revealed.has(startKey)) continue;
+    if (G.events[startKey] !== ev) continue; // ya se movió a esta celda otro enemigo
+
+    let key = startKey;
+    let [er, ec] = startKey.split(',').map(Number);
+    const steps = rollSum(ev.data.moveDice || 1);
+
+    for (let i = 0; i < steps && Math.abs(pr - er) + Math.abs(pc - ec) > 1; i++) {
+      const dr = Math.sign(pr - er);
+      const dc = Math.sign(pc - ec);
+      const nr = er + dr, nc = ec + dc;
+      const newKey = `${nr},${nc}`;
+      if (newKey === `${pr},${pc}`) break; // no pisa al jugador — se resuelve como ataque más abajo
+
+      const tileId = G.board.map[nr]?.[nc];
+      const tile   = G.board.tileset[tileId];
+      if (!tile?.passable || G.events[newKey]) break;
+
+      G.events[newKey] = ev;
+      delete G.events[key];
+      key = newKey; er = nr; ec = nc;
+    }
+
+    if (Math.abs(pr - er) + Math.abs(pc - ec) === 1) {
+      if (resolveCombatAt(key, ev.data)) return;
+    }
+  }
 }
 
 // ── search ─────────────────────────────────────────────────────────────────
