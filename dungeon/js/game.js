@@ -63,6 +63,7 @@ export function rollDice() {
   const desc = parts.join(' + ');
   log(`🎲 ${desc}${n > 1 ? ` = ${total}` : ''} pasos (turno ${G.turns})`, 'sys');
   updateHUD(G);
+  boardEl().focus();
 }
 
 // ── event dispatch ────────────────────────────────────────────────────────
@@ -99,7 +100,8 @@ export function endTurn() {
   moveEnemies();
   render(G, boardEl());
   updateHUD(G);
-  if (!G.over && !G.won) rollDice();
+  boardEl().focus();
+  //if (!G.over && !G.won) rollDice();
 }
 
 // ── move ──────────────────────────────────────────────────────────────────
@@ -362,6 +364,7 @@ export function trySearch() {
 
   render(G, boardEl());
   updateHUD(G);
+  boardEl().focus();
 }
 
 // ── input (click) ─────────────────────────────────────────────────────────
