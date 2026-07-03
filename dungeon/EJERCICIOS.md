@@ -192,41 +192,59 @@ renderMinimap(state);
 
 ---
 
-☐ ## 6. Movimiento de enemigos
+✅ ## 6. Movimiento de enemigos
 
-**Objetivo:** Que los enemigos se muevan un paso por turno hacia el jugador
-cuando están dentro del área revelada (`G.revealed`).
+**Objetivo:** Que los enemigos se muevan hacia el jugador cuando están dentro
+del área revelada (`G.revealed`), y ataquen al quedar adyacentes.
 
-**Archivos a modificar:** `js/game.js`
+**Archivos modificados:** `js/game.js`, `js/combat.js`
 
-**Pista:** los enemigos ya bloquean el paso del jugador en `tryMove` (una
+**Cómo quedó:** los enemigos ya bloquean el paso del jugador en `tryMove` (una
 celda con `type: 'enemy'` no se puede pisar; el combate se dispara aparte con
-`tryAttack`, al clickear una celda adyacente). Este ejercicio agrega el lado
-inverso: que el enemigo avance hacia el jugador. Iterar `G.events`, filtrar
-los de tipo `enemy` dentro de `G.revealed`, y moverlos un paso con distancia
-Manhattan. Llamar a `moveEnemies()` al final de `tryMove`, antes de `render`.
-Si un enemigo termina adyacente al jugador (o sobre su celda), definir cómo se
-resuelve — por ejemplo, disparando `resolveAttackRound` directamente en vez de
-esperar el click del jugador.
+`tryAttack`, al clickear una celda adyacente). `moveEnemies()` agrega el lado
+inverso: itera `G.events`, filtra los de tipo `enemy` dentro de `G.revealed`,
+y los avanza hacia el jugador con distancia Manhattan — pero en vez de un
+paso fijo, la cantidad de pasos sale de `enemy.moveDice` (ver `enemies.js`,
+mismo concepto que el `moveDice` del jugador): se tira esa cantidad de D6 con
+`rollSum()` (exportada de `combat.js`) y esa es la cantidad de celdas que
+recorre en el turno. Se llama a `moveEnemies()` al final de `tryMove`, antes
+de `render`. Si un enemigo termina adyacente al jugador (o ya lo estaba),
+ataca de inmediato disparando `resolveAttackRound` a través del mismo helper
+(`resolveCombatAt`) que usa `tryAttack`, en vez de esperar el click.
 
 ```js
-// Función nueva en js/game.js:
+// js/game.js:
 function moveEnemies() {
   const [pr, pc] = G.pos;
-  Object.entries(G.events).forEach(([key, ev]) => {
-    if (ev.type !== 'enemy' || !G.revealed.has(key)) return;
-    const [er, ec] = key.split(',').map(Number);
-    const dr = Math.sign(pr - er);
-    const dc = Math.sign(pc - ec);
-    const newKey = `${er + dr},${ec + dc}`;
-    if (newKey === `${pr},${pc}`) return; // no pisa al jugador — resolver combate acá
-    const tileId = G.board.map[er + dr]?.[ec + dc];
-    const tile = G.board.tileset[tileId];
-    if (tile?.passable && !G.events[newKey]) {
+
+  for (const [startKey, ev] of Object.entries(G.events)) {
+    if (ev.type !== 'enemy' || !G.revealed.has(startKey)) continue;
+    if (G.events[startKey] !== ev) continue; // ya se movió a esta celda otro enemigo
+
+    let key = startKey;
+    let [er, ec] = startKey.split(',').map(Number);
+    const steps = rollSum(ev.data.moveDice || 1);
+
+    for (let i = 0; i < steps && Math.abs(pr - er) + Math.abs(pc - ec) > 1; i++) {
+      const dr = Math.sign(pr - er);
+      const dc = Math.sign(pc - ec);
+      const nr = er + dr, nc = ec + dc;
+      const newKey = `${nr},${nc}`;
+      if (newKey === `${pr},${pc}`) break; // no pisa al jugador — se resuelve como ataque más abajo
+
+      const tileId = G.board.map[nr]?.[nc];
+      const tile   = G.board.tileset[tileId];
+      if (!tile?.passable || G.events[newKey]) break;
+
       G.events[newKey] = ev;
       delete G.events[key];
+      key = newKey; er = nr; ec = nc;
     }
-  });
+
+    if (Math.abs(pr - er) + Math.abs(pc - ec) === 1) {
+      if (resolveCombatAt(key, ev.data)) return; // el jugador murió, corta el resto de los movimientos
+    }
+  }
 }
 ```
 
