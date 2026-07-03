@@ -128,3 +128,26 @@ button.danger{background:#3a0808;border-color:#c0392b;color:#e05252}
 button.danger:hover{background:#4a1010}
 
 #controls{margin-top:.6rem;font-size:.72rem;color:#444;text-align:center;line-height:1.8}
+
+/* CLASS SELECTOR */
+#class-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);
+  align-items:center;justify-content:center;z-index:60;
+}
+#class-overlay.on{display:flex}
+#class-modal{
+  background:#161616;border:2px solid #3a3a3a;border-radius:8px;
+  padding:2rem;text-align:center;max-width:520px;width:92%;
+}
+#class-modal h2{color:#e8c84a;margin-bottom:1.25rem;letter-spacing:2px;text-transform:uppercase}
+#class-cards{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center}
+.class-card{
+  background:#1a1a1a;border:1px solid #333;border-radius:6px;
+  padding:1rem;width:140px;cursor:pointer;transition:border-color .15s,background .15s;
+  text-align:center;
+}
+.class-card:hover{background:#222;border-color:#e8c84a}
+.class-card h3{color:#e8c84a;font-size:.85rem;margin-bottom:.4rem}
+.class-card .class-desc{color:#888;font-size:.72rem;margin-bottom:.5rem;line-height:1.4}
+.class-card .class-stat{color:#aaa;font-size:.72rem}
+.class-card .class-stat span{color:#666}

@@ -16,6 +16,7 @@ let currentIndex = 0;
 let returnPos    = null;
 let levelCache   = {};
 let shopOpen     = false;
+let chosenClass  = 'warrior';
 
 const boardEl = () => document.getElementById('board');
 const logEl   = () => document.getElementById('log');
@@ -165,7 +166,7 @@ function winGame() {
     showModal(
       '¡Victoria Total!',
       `Conquistaste la mazmorra completa.\n\nTurnos: ${G.turns} | Oro: ${G.player.gold} | HP: ${G.player.hp}/${G.player.maxHp} | Nivel: ${G.player.level}`,
-      [{ label: 'Nueva partida', cls: 'primary', fn: () => restartGame(levels) }]
+      [{ label: 'Nueva partida', cls: 'primary', fn: () => document.dispatchEvent(new CustomEvent('restart-request')) }]
     );
   }
 }
@@ -176,7 +177,7 @@ function advanceLevel(player) {
   currentIndex++;
   closeModal();
   logEl().innerHTML = '';
-  G = initState(levels[currentIndex]);
+  G = initState(levels[currentIndex], chosenClass);
   G.player = { ...player };
   revealAround(G, G.pos[0], G.pos[1], G.player.visionRange);
   buildBoard(G.board, boardEl(), onCellClick, () => G);
@@ -193,7 +194,7 @@ function goBackLevel() {
   currentIndex--;
   const prevPlayer = { ...G.player };
   logEl().innerHTML = '';
-  G = initState(levels[currentIndex]);
+  G = initState(levels[currentIndex], chosenClass);
   if (levelCache[currentIndex]) G.events = levelCache[currentIndex].events;
   G.player = { ...prevPlayer };
   if (returnPos) G.pos = [...returnPos];
@@ -215,18 +216,19 @@ function gameOver() {
   showModal(
     '¡Has muerto!',
     `La mazmorra reclamó otra víctima.\n\nTurnos: ${G.turns} | Oro acumulado: ${G.player.gold}`,
-    [{ label: 'Intentar de nuevo', cls: 'danger', fn: () => restartGame(levels) }]
+    [{ label: 'Intentar de nuevo', cls: 'danger', fn: () => document.dispatchEvent(new CustomEvent('restart-request')) }]
   );
 }
 
-export function restartGame(levelList) {
+export function restartGame(levelList, classId) {
+  if (classId) chosenClass = classId;
   levels       = levelList;
   currentIndex = 0;
   returnPos    = null;
   levelCache   = {};
   closeModal();
   logEl().innerHTML = '';
-  G = initState(levels[0]);
+  G = initState(levels[0], chosenClass);
   revealAround(G, G.pos[0], G.pos[1], G.player.visionRange);
   buildBoard(G.board, boardEl(), onCellClick, () => G);
   render(G, boardEl());

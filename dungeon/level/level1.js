@@ -1,4 +1,3 @@
-import { PLAYER_BASE } from '../player.js';
 import { createEnemy } from '../enemies.js';
 
 export default {
@@ -7,7 +6,6 @@ export default {
     rows: 12,
     cols: 12,
     startPos: [1, 1],
-    player: { ...PLAYER_BASE }
   },
   tileset: {
     floor:    { passable: true,  asset: "floor"    },

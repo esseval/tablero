@@ -1,5 +1,6 @@
 import { restartGame, tryMove, trySearch, exportBoard, importBoard, rollDice, endTurn } from './game.js';
 import { MANIFEST } from '../level/manifest.js';
+import { CLASSES } from '../classes.js';
 
 const boardEl = document.getElementById('board');
 
@@ -23,9 +24,38 @@ const levels = await Promise.all(
   MANIFEST.map(name => import(`../level/${name}.js`).then(m => m.default))
 );
 
+// ── class selector ──────────────────────────────────────────────────────────
+
+function showClassSelector() {
+  const overlay = document.getElementById('class-overlay');
+  const cards   = document.getElementById('class-cards');
+  cards.innerHTML = '';
+
+  for (const [id, cls] of Object.entries(CLASSES)) {
+    const s = cls.stats;
+    const card = document.createElement('div');
+    card.className = 'class-card';
+    card.innerHTML = `
+      <h3>${cls.name}</h3>
+      <div class="class-desc">${cls.desc}</div>
+      <div class="class-stat">❤ ${s.hp}  ⚔ ${s.atk}  🛡 ${s.def}</div>
+      <div class="class-stat">🎲 <span>mov</span> ${s.moveDice}d6  <span>atk</span> ${s.atkDice}d6</div>
+      <div class="class-stat">🪙 ${s.gold}  👁 ${s.visionRange}</div>
+    `;
+    card.addEventListener('click', () => {
+      overlay.classList.remove('on');
+      restartGame(levels, id);
+    });
+    cards.appendChild(card);
+  }
+
+  overlay.classList.add('on');
+}
+
 document.getElementById('btn-search').addEventListener('click', trySearch);
 document.getElementById('btn-end-turn').addEventListener('click', endTurn);
 document.getElementById('btn-roll-dice').addEventListener('click', rollDice);
-document.getElementById('btn-restart').addEventListener('click', () => restartGame(levels));
+document.getElementById('btn-restart').addEventListener('click', showClassSelector);
+document.addEventListener('restart-request', showClassSelector);
 
-restartGame(levels);
+showClassSelector();
