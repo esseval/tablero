@@ -8,10 +8,40 @@ body{
 
 h1{color:#e8c84a;font-size:1.3rem;letter-spacing:4px;margin-bottom:.75rem;text-transform:uppercase}
 
-#io-bar{display:flex;gap:.5rem;margin-bottom:.75rem;align-items:center;flex-wrap:wrap;justify-content:center}
+#io-bar{
+  display:flex;
+
+  background:#141414;
+  border:1px solid #2e2e2e;
+  border-radius:6px;
+  padding:1rem;width:175px;
+  gap:.85rem;
+
+  /* margin-bottom:.75rem;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:center; */
+
+  flex-direction: column;
+  align-items: flex-start;
+  width: 200px;  
+}
 #io-bar input[type="file"]{display:none}
 
-#layout{display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+#layout{
+  display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;justify-content:center;
+  flex-direction: column;
+}
+
+#header {
+  display: flex;
+  width: stretch;
+}
+
+#content {
+  display: flex;
+  gap: 1rem;
+}
 
 /* BOARD */
 #board{display:grid;border:2px solid #3a3a3a;background:#000;outline:none}
