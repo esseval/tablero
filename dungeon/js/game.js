@@ -93,6 +93,15 @@ function handleEvent(state, key, event) {
   if (state.board.map[state.pos[0]][state.pos[1]] === 'exit') winGame();
 }
 
+// ── end turn ───────────────────────────────────────────────────────────────
+
+export function endTurn() {
+  moveEnemies();
+  render(G, boardEl());
+  updateHUD(G);
+  if (!G.over && !G.won) rollDice();
+}
+
 // ── move ──────────────────────────────────────────────────────────────────
 
 export function tryMove(dr, dc) {
@@ -127,13 +136,11 @@ export function tryMove(dr, dc) {
     return;
   }
 
-  if (!G.over) moveEnemies();
-
   render(G, boardEl());
   updateHUD(G);
 
   if (G.stepsRemaining <= 0 && !G.over && !G.won) {
-    rollDice();
+    endTurn();
   }
 }
 
