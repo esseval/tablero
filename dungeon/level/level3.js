@@ -1,4 +1,5 @@
 import { PLAYER_BASE } from '../player.js';
+import { createEnemy } from '../enemies.js';
 
 export default {
   meta: {
@@ -29,16 +30,16 @@ export default {
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"]
   ],
   events: {
-    "1,2": { type:"enemy",    data:{ id:"spider",      name:"Araña Mutante",   hp:12, maxHp:12, atk:5, def:2, gold:6,  xp:10 }},
-    "3,5": { type:"enemy",    data:{ id:"skeleton", name:"Espectro",       hp:18, maxHp:18, atk:8, def:3, gold:12, xp:18 }},
-    "4,3": { type:"enemy",    data:{ id:"skeleton", name:"Caballero Maldito", hp:22, maxHp:22, atk:9, def:4, gold:15, xp:22 }},
-    "6,1": { type:"enemy",    data:{ id:"troll",    name:"Troll Ancestral",hp:28, maxHp:28, atk:9, def:5, gold:20, xp:28 }},
-    "6,6": { type:"enemy",    data:{ id:"troll",    name:"Golem de Piedra",hp:30, maxHp:30, atk:9, def:6, gold:22, xp:30 }},
-    "7,9": { type:"enemy",    data:{ id:"troll",    name:"Guardián Final", hp:32, maxHp:32, atk:10, def:6, gold:25, xp:35 }},
-    "9,3": { type:"enemy",    data:{ id:"skeleton", name:"Rey Esqueleto",  hp:26, maxHp:26, atk:10, def:4, gold:18, xp:28 }},
-    "1,6": { type:"enemy",    data:{ id:"goblin",   name:"Goblin Élite",     hp:18, maxHp:18, atk:7, def:3, gold:13, xp:18 }},
-    "5,7": { type:"enemy",    data:{ id:"goblin",   name:"Jefe Goblin",      hp:22, maxHp:22, atk:8, def:3, gold:16, xp:22 }},
-    "10,9":{ type:"enemy",    data:{ id:"dragon",   name:"Dragón Guardián",  hp:40, maxHp:40, atk:11, def:6, gold:50, xp:60 }},
+    "1,2": { type:"enemy", data: createEnemy('spider',   { name:"Araña Mutante",     hp:12, atk:5,  def:2, gold:6,  xp:10 })},
+    "3,5": { type:"enemy", data: createEnemy('skeleton', { name:"Espectro",          hp:18, atk:8,  def:3, gold:12, xp:18 })},
+    "4,3": { type:"enemy", data: createEnemy('skeleton', { name:"Caballero Maldito", hp:22, atk:9,  def:4, gold:15, xp:22 })},
+    "6,1": { type:"enemy", data: createEnemy('troll',    { name:"Troll Ancestral",   hp:28, atk:9,  def:5, gold:20, xp:28 })},
+    "6,6": { type:"enemy", data: createEnemy('troll',    { name:"Golem de Piedra",   hp:30, atk:9,  def:6, gold:22, xp:30 })},
+    "7,9": { type:"enemy", data: createEnemy('troll',    { name:"Guardián Final",    hp:32, atk:10, def:6, gold:25, xp:35 })},
+    "9,3": { type:"enemy", data: createEnemy('skeleton', { name:"Rey Esqueleto",     hp:26, atk:10, def:4, gold:18, xp:28 })},
+    "1,6": { type:"enemy", data: createEnemy('goblin',   { name:"Goblin Élite",      hp:18, atk:7,  def:3, gold:13, xp:18 })},
+    "5,7": { type:"enemy", data: createEnemy('goblin',   { name:"Jefe Goblin",       hp:22, atk:8,  def:3, gold:16, xp:22 })},
+    "10,9":{ type:"enemy", data: createEnemy('dragon',   { name:"Dragón Guardián",   hp:40, atk:11, def:6, gold:50, xp:60 })},
     "1,9": { type:"treasure", data:{ gold:20, msg:"Oro de un héroe caído. ¡20 monedas!" }},
     "2,10":{ type:"treasure", data:{ gold:25, msg:"Un cofre real. ¡25 monedas de oro!", xp:8 }},
     "7,10":{ type:"treasure", data:{ gold:35, msg:"El tesoro del Rey. ¡35 monedas de oro!", xp:15 }},

@@ -1,4 +1,5 @@
 import { PLAYER_BASE } from '../player.js';
+import { createEnemy } from '../enemies.js';
 
 export default {
   meta: {
@@ -29,15 +30,15 @@ export default {
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"]
   ],
   events: {
-    "2,1": { type:"enemy",    data:{ id:"spider",      name:"Araña Venenosa",   hp:10, maxHp:10, atk:4, def:1, gold:4,  xp:8  }},
-    "3,3": { type:"enemy",    data:{ id:"skeleton", name:"Esqueleto",      hp:14, maxHp:14, atk:6, def:3, gold:9,  xp:13 }},
-    "5,1": { type:"enemy",    data:{ id:"skeleton", name:"Esqueleto Jefe", hp:18, maxHp:18, atk:7, def:4, gold:12, xp:16 }},
-    "5,5": { type:"enemy",    data:{ id:"troll",    name:"Troll",          hp:20, maxHp:20, atk:8, def:5, gold:16, xp:22 }},
-    "7,2": { type:"enemy",    data:{ id:"troll",    name:"Troll",          hp:22, maxHp:22, atk:8, def:6, gold:18, xp:24 }},
-    "7,6": { type:"enemy",    data:{ id:"skeleton", name:"Espectro",       hp:16, maxHp:16, atk:8, def:3, gold:11, xp:18 }},
-    "9,4": { type:"enemy",    data:{ id:"troll",    name:"Guardián",       hp:26, maxHp:26, atk:9, def:6, gold:22, xp:28 }},
-    "1,4": { type:"enemy",    data:{ id:"goblin",   name:"Goblin Feroz",     hp:12, maxHp:12, atk:5, def:2, gold:8,  xp:11 }},
-    "3,7": { type:"enemy",    data:{ id:"goblin",   name:"Goblin Chamán",    hp:14, maxHp:14, atk:6, def:2, gold:10, xp:14 }},
+    "2,1": { type:"enemy", data: createEnemy('spider',   { name:"Araña Venenosa", hp:10, atk:4, def:1, gold:4,  xp:8  })},
+    "3,3": { type:"enemy", data: createEnemy('skeleton', { name:"Esqueleto" })},
+    "5,1": { type:"enemy", data: createEnemy('skeleton', { name:"Esqueleto Jefe", hp:18, atk:7, def:4, gold:12, xp:16 })},
+    "5,5": { type:"enemy", data: createEnemy('troll',    { name:"Troll" })},
+    "7,2": { type:"enemy", data: createEnemy('troll',    { name:"Troll" })},
+    "7,6": { type:"enemy", data: createEnemy('skeleton', { name:"Espectro",       hp:16, atk:8, def:3, gold:11, xp:18 })},
+    "9,4": { type:"enemy", data: createEnemy('troll',    { name:"Guardián",       hp:26, atk:9, def:6, gold:22, xp:28 })},
+    "1,4": { type:"enemy", data: createEnemy('goblin',   { name:"Goblin Feroz",   hp:12, atk:5, def:2, gold:8,  xp:11 })},
+    "3,7": { type:"enemy", data: createEnemy('goblin',   { name:"Goblin Chamán",  hp:14, atk:6, def:2, gold:10, xp:14 })},
     "1,9": { type:"treasure", data:{ gold:15, msg:"Un cofre olvidado. ¡15 monedas de oro!" }},
     "7,10":{ type:"treasure", data:{ gold:18, msg:"Monedas de un aventurero caído. +18 oro", xp:5 }},
     "9,2": { type:"treasure", data:{ gold:25, msg:"Un cofre doble sellado. ¡25 monedas de oro!", xp:10 }},
