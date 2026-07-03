@@ -139,9 +139,7 @@ export function tryMove(dr, dc) {
   render(G, boardEl());
   updateHUD(G);
 
-  if (G.stepsRemaining <= 0 && !G.over && !G.won) {
-    endTurn();
-  }
+  // sin auto-fin-de-turno — el jugador decide cuándo terminar
 }
 
 // ── lifecycle ─────────────────────────────────────────────────────────────

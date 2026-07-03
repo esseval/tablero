@@ -1,4 +1,4 @@
-import { restartGame, tryMove, trySearch, exportBoard, importBoard, endTurn } from './game.js';
+import { restartGame, tryMove, trySearch, exportBoard, importBoard, rollDice, endTurn } from './game.js';
 import { MANIFEST } from '../level/manifest.js';
 
 const boardEl = document.getElementById('board');
@@ -25,6 +25,7 @@ const levels = await Promise.all(
 
 document.getElementById('btn-search').addEventListener('click', trySearch);
 document.getElementById('btn-end-turn').addEventListener('click', endTurn);
+document.getElementById('btn-roll-dice').addEventListener('click', rollDice);
 document.getElementById('btn-restart').addEventListener('click', () => restartGame(levels));
 
 restartGame(levels);
