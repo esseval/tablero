@@ -3,16 +3,19 @@
  *
  * El `id` de cada especie debe coincidir con el nombre de un asset en
  * `assets/` (ver renderer.js, que usa `id` para resolver el sprite).
- * `name`, `hp`, `maxHp`, `atk`, `def`, `gold` y `xp` son los valores por
- * defecto de la especie; cada instancia de nivel puede pisar cualquiera
- * de ellos (ej. un "Esqueleto Jefe" más fuerte que el esqueleto base).
+ * `name`, `hp`, `maxHp`, `atk`, `def`, `gold`, `xp` y `moveDice` son los
+ * valores por defecto de la especie; cada instancia de nivel puede pisar
+ * cualquiera de ellos (ej. un "Esqueleto Jefe" más fuerte que el esqueleto
+ * base). `moveDice` es la cantidad de dados D6 que tira el enemigo para
+ * definir cuántos pasos avanza por turno (ver player.js, mismo concepto que
+ * `moveDice` del jugador).
  */
 export const ENEMY_TYPES = {
-  spider:   { name: "Araña",     hp: 6,  maxHp: 6,  atk: 3,  def: 1, gold: 3,  xp: 5  },
-  skeleton: { name: "Esqueleto", hp: 12, maxHp: 12, atk: 5,  def: 3, gold: 8,  xp: 12 },
-  goblin:   { name: "Goblin",    hp: 7,  maxHp: 7,  atk: 4,  def: 2, gold: 5,  xp: 6  },
-  troll:    { name: "Troll",     hp: 18, maxHp: 18, atk: 7,  def: 5, gold: 15, xp: 20 },
-  dragon:   { name: "Dragón",    hp: 40, maxHp: 40, atk: 11, def: 6, gold: 50, xp: 60 },
+  spider:   { name: "Araña",     hp: 6,  maxHp: 6,  atk: 3,  def: 1, gold: 3,  xp: 5,  moveDice: 1 },
+  skeleton: { name: "Esqueleto", hp: 12, maxHp: 12, atk: 5,  def: 3, gold: 8,  xp: 12, moveDice: 1 },
+  goblin:   { name: "Goblin",    hp: 7,  maxHp: 7,  atk: 4,  def: 2, gold: 5,  xp: 6,  moveDice: 1 },
+  troll:    { name: "Troll",     hp: 18, maxHp: 18, atk: 7,  def: 5, gold: 15, xp: 20, moveDice: 1 },
+  dragon:   { name: "Dragón",    hp: 40, maxHp: 40, atk: 11, def: 6, gold: 50, xp: 60, moveDice: 1 },
 };
 
 /**
@@ -24,8 +27,8 @@ export const ENEMY_TYPES = {
  * a vida completa, así que no hace falta declararlo aparte.
  *
  * @param {keyof ENEMY_TYPES} id — especie, debe existir en ENEMY_TYPES.
- * @param {{hp?:number, atk?:number, def?:number, gold?:number, xp?:number, name?:string}} [overrides]
- * @returns {{id:string, name:string, hp:number, maxHp:number, atk:number, def:number, gold:number, xp:number}}
+ * @param {{hp?:number, atk?:number, def?:number, gold?:number, xp?:number, name?:string, moveDice?:number}} [overrides]
+ * @returns {{id:string, name:string, hp:number, maxHp:number, atk:number, def:number, gold:number, xp:number, moveDice:number}}
  */
 export function createEnemy(id, overrides = {}) {
   const base = ENEMY_TYPES[id];
@@ -39,5 +42,6 @@ export function createEnemy(id, overrides = {}) {
     def: overrides.def ?? base.def,
     gold: overrides.gold ?? base.gold,
     xp: overrides.xp ?? base.xp,
+    moveDice: overrides.moveDice ?? base.moveDice,
   };
 }
