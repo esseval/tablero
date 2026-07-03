@@ -82,7 +82,8 @@ export function render(state, container) {
       el.innerHTML = `<img class="cell-bg" src="assets/${assetId}.png" alt="">`;
 
       if (r === pr && c === pc) {
-        el.innerHTML += `<div class="cell-entity"><img src="assets/player.png" alt="Jugador"></div>`;
+        const playerAsset = state.player.class ? `player-${state.player.class}` : 'player';
+        el.innerHTML += `<div class="cell-entity"><img src="assets/${playerAsset}.png" alt="Jugador"></div>`;
       } else {
         const ev = state.events[key];
         if (ev) {
