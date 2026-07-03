@@ -378,17 +378,33 @@ de nivel).
 1. Crear `level/levelN.js`:
 ```js
 import { PLAYER_BASE } from '../player.js';
+import { createEnemy } from '../enemies.js';
 
 export default {
   meta: { name, rows, cols, startPos, player: { ...PLAYER_BASE } },
   tileset: { ... },
   map: [ [...], ... ],
-  events: { "r,c": { type, data }, ... }
+  events: {
+    "r,c": { type:"enemy", data: createEnemy('goblin', { name, hp, atk, def, gold, xp }) },
+    "r,c": { type, data },
+    ...
+  }
 };
 ```
 2. Agregar `'levelN'` al array en `level/manifest.js`
 
 No se requieren cambios en ningún otro archivo.
+
+### Enemigos (`enemies.js`)
+
+Los enemigos no se definen como literales sueltos: se construyen con
+`createEnemy(id, stats)` (`dungeon/enemies.js`). `id` es la especie
+(`spider`, `skeleton`, `goblin`, `troll`, `dragon` — debe existir en
+`ENEMY_TYPES` y coincidir con un asset en `assets/`); `stats` trae los
+valores propios de la instancia (`hp`, `atk`, `def`, `gold`, `xp` y
+opcionalmente `name` si difiere del nombre de especie). `maxHp` se deriva
+de `hp` automáticamente — cada enemigo nace a vida completa. `gold` y `xp`
+son `0` por defecto si se omiten.
 
 ## Agregar un tipo de evento nuevo
 
