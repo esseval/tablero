@@ -12,8 +12,8 @@
  *   es una clase CSS opcional para estilizar la línea.
  */
 export function createLog(elementId) {
+  const el = document.getElementById(elementId);
   return function log(txt, cls = '') {
-    const el = document.getElementById(elementId);
     const div = document.createElement('div');
     div.className = cls;
     div.textContent = txt;
