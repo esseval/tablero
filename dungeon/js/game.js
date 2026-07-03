@@ -6,7 +6,7 @@ import { updateHUD }             from './hud.js';
 import { showModal, closeModal } from '../../shared/modal.js';
 import { createLog }             from '../../shared/log.js';
 import { download, readJSON }    from '../../shared/storage.js';
-import { roll, checkLevelUp }    from './combat.js';
+import { roll, checkLevelUp, resolveAttackRound } from './combat.js';
 
 const log = createLog('log');
 
@@ -31,6 +31,7 @@ function itemLabel(item) {
 
 function buyItem(item) {
   if (G.player.gold < item.price) { log('No tenés oro suficiente.', 'danger'); return; }
+  if (item.stock !== undefined) item.stock--;
   G.player.gold -= item.price;
   if (item.type === 'potion') {
     G.player.hp = Math.min(G.player.hp + item.hp, G.player.maxHp);
@@ -106,6 +107,10 @@ export function tryMove(dr, dc) {
   const tileId = map[nr][nc];
   const tile   = G.board.tileset[tileId];
   if (!tile || !tile.passable) return;
+
+  // Enemigos y cofres bloquean el paso
+  const targetEvent = G.events[`${nr},${nc}`];
+  if (targetEvent?.type === 'enemy' || targetEvent?.type === 'treasure') return;
 
   G.pos = [nr, nc];
   G.stepsRemaining--;
@@ -222,6 +227,92 @@ export function restartGame(levelList) {
   rollDice();
 }
 
+// ── open (treasure) ────────────────────────────────────────────────────────
+
+function tryOpen(dr, dc) {
+  if (!G || G.over) return;
+  if (shopOpen) return;
+  const [r, c] = G.pos;
+  const nr = r + dr, nc = c + dc;
+  const key = `${nr},${nc}`;
+  const event = G.events[key];
+  if (!event || event.type !== 'treasure') return;
+
+  // TODO: calcular probabilidad según player.openChance
+  const success = true;
+
+  if (!success) {
+    log('🔒 Fallaste al abrir el cofre.', 'danger');
+    render(G, boardEl());
+    updateHUD(G);
+    return;
+  }
+
+  const result = EVENT_HANDLERS.treasure(G, key, event.data);
+
+  if (result.msg) log(result.msg, result.cls);
+  if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
+  if (result.leveledUp) log(`⭐ ¡Subiste al nivel ${result.newLevel}! +2 HP máximo`, 'ok');
+
+  render(G, boardEl());
+  updateHUD(G);
+}
+
+// ── attack ─────────────────────────────────────────────────────────────────
+
+function tryAttack(dr, dc) {
+  if (!G || G.over) return;
+  if (shopOpen) return;
+  const [r, c] = G.pos;
+  const nr = r + dr, nc = c + dc;
+  const key = `${nr},${nc}`;
+  const event = G.events[key];
+  if (!event || event.type !== 'enemy') return;
+
+  const result = resolveAttackRound(G, event.data);
+
+  if (result.lines) result.lines.forEach(l => log(l.txt, l.cls));
+  if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
+  if (result.leveledUp) log(`⭐ ¡Subiste al nivel ${result.newLevel}! +2 HP máximo`, 'ok');
+
+  if (result.died) {
+    if (result.playerDied) { delete G.events[key]; render(G, boardEl()); updateHUD(G); gameOver(); return; }
+    delete G.events[key];
+  }
+
+  render(G, boardEl());
+  updateHUD(G);
+}
+
+// ── search ─────────────────────────────────────────────────────────────────
+
+export function trySearch() {
+  if (!G || G.over) return;
+  if (shopOpen) return;
+
+  const found = [];
+  for (const key of G.visible) {
+    const event = G.events[key];
+    if (!event || (event.type !== 'potion' && event.type !== 'trap')) continue;
+    // TODO: calcular probabilidad según player.searchChance
+    const success = true;
+    if (success) {
+      if (G.searched.has(key)) continue;
+      G.searched.add(key);
+      found.push(event.type === 'potion' ? 'una poción' : 'una trampa');
+    }
+  }
+
+  if (found.length === 0) {
+    log('🔍 No encontraste nada.', 'sys');
+  } else {
+    log(`🔍 ¡Encontraste ${found.join(', ')}!`, 'ok');
+  }
+
+  render(G, boardEl());
+  updateHUD(G);
+}
+
 // ── input (click) ─────────────────────────────────────────────────────────
 
 function onCellClick(r, c) {
@@ -229,7 +320,17 @@ function onCellClick(r, c) {
   if (shopOpen) return;
   const [pr, pc] = G.pos;
   const dr = r - pr, dc = c - pc;
-  if (Math.abs(dr) + Math.abs(dc) === 1) tryMove(dr, dc);
+  if (Math.abs(dr) + Math.abs(dc) !== 1) return;
+
+  const key = `${r},${c}`;
+  const ev = G.events[key];
+  if (ev?.type === 'enemy') {
+    tryAttack(dr, dc);
+  } else if (ev?.type === 'treasure') {
+    tryOpen(dr, dc);
+  } else {
+    tryMove(dr, dc);
+  }
 }
 
 // ── I/O ───────────────────────────────────────────────────────────────────

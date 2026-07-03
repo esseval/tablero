@@ -1,10 +1,14 @@
-import { resolveCombat, checkLevelUp } from './combat.js';
+import { resolveAttackRound, checkLevelUp } from './combat.js';
 
 export const EVENT_HANDLERS = {
   enemy(state, key, data) {
-    const result = resolveCombat(state, { ...data });
-    delete state.events[key];
-    return { lines: result.lines, died: !result.won, leveledUp: result.leveledUp, newLevel: result.newLevel };
+    // El combate se maneja desde tryAttack en game.js.
+    // Este handler queda como respaldo por si se carga una partida
+    // donde el jugador aparece sobre un enemigo.
+    const result = resolveAttackRound(state, data);
+    const r = { lines: result.lines, died: result.playerDied, leveledUp: result.leveledUp, newLevel: result.newLevel };
+    if (result.died && !result.playerDied) delete state.events[key];
+    return r;
   },
   treasure(state, key, data) {
     state.player.gold += data.gold;
@@ -30,6 +34,7 @@ export const EVENT_HANDLERS = {
     return { msg: `🩸 ${data.msg} (HP: ${Math.max(0, p.hp)}/${p.maxHp})`, cls: 'danger', died: p.hp <= 0 };
   },
   npc(state, key, data) {
-    return { shop: data };
+    const available = data.items.filter(item => item.stock === undefined || item.stock > 0);
+    return { shop: { ...data, items: available } };    
   },
 };
