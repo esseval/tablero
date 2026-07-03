@@ -39,10 +39,11 @@ export function resolveAttackRound(state, enemy) {
 
   if (enemy.hp <= 0) {
     const xpGained = enemy.xp || 1;
-    p.gold += enemy.gold;
+    const goldGained = enemy.gold || 0;
+    p.gold += goldGained;
     p.xp += xpGained;
     const leveledUp = checkLevelUp(p);
-    lines.push({ cls: 'loot', txt: `✓ Derrotaste a ${enemy.name}. +${enemy.gold} oro  +${xpGained} XP` });
+    lines.push({ cls: 'loot', txt: `✓ Derrotaste a ${enemy.name}. +${goldGained} oro  +${xpGained} XP` });
     return { died: true, lines, xpGained, leveledUp, newLevel: p.level };
   }
 
