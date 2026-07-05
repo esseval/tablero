@@ -11,7 +11,8 @@ export default {
     floor:    { passable: true,  asset: "floor"    },
     wall:     { passable: false, asset: "wall"     },
     exit:     { passable: true,  asset: "exit"     },
-    entrance: { passable: true,  asset: "entrance" }
+    entrance: { passable: true,  asset: "entrance" },
+    door: { passable: false,  asset: "door" }
   },
   map: [
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"],
@@ -19,7 +20,7 @@ export default {
     ["wall","floor","wall","floor","wall","floor","wall","wall","floor","wall","floor","wall"],
     ["wall","floor","wall","floor","floor","floor","floor","wall","floor","floor","floor","wall"],
     ["wall","floor","wall","wall","wall","floor","wall","wall","floor","wall","floor","wall"],
-    ["wall","floor","floor","floor","floor","floor","floor","floor","floor","wall","floor","wall"],
+    ["wall","floor","door","floor","floor","floor","floor","floor","floor","wall","floor","wall"],
     ["wall","wall","wall","floor","wall","wall","floor","wall","floor","wall","floor","wall"],
     ["wall","floor","floor","floor","wall","floor","floor","floor","floor","floor","floor","wall"],
     ["wall","floor","wall","wall","wall","floor","wall","wall","wall","floor","wall","wall"],

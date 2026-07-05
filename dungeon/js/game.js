@@ -275,6 +275,24 @@ function tryOpen(dr, dc) {
   updateHUD(G);
 }
 
+// ── door ───────────────────────────────────────────────────────────────────
+
+function tryOpenDoor(dr, dc) {
+  if (!G || G.over) return;
+  if (shopOpen) return;
+  if (G.stepsRemaining <= 0) return;
+  const [r, c] = G.pos;
+  const nr = r + dr, nc = c + dc;
+  if (G.board.map[nr][nc] !== 'door') return;
+
+  G.board.map[nr][nc] = 'floor';
+  log('🚪 Abriste la puerta.', 'ok');
+  flashCell(nr, nc, 'flash-loot');
+
+  render(G, boardEl());
+  updateHUD(G);
+}
+
 // ── attack ─────────────────────────────────────────────────────────────────
 
 // Resuelve un asalto contra el enemigo en `key`. Retorna true si el jugador
@@ -399,6 +417,8 @@ function onCellClick(r, c) {
     tryAttack(dr, dc);
   } else if (ev?.type === 'treasure') {
     tryOpen(dr, dc);
+  } else if (G.board.map[r][c] === 'door') {
+    tryOpenDoor(dr, dc);
   } else {
     tryMove(dr, dc);
   }
