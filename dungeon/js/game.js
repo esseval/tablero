@@ -1,7 +1,7 @@
 import { initState }             from './state.js';
 import { revealAround }          from './fog.js';
 import { EVENT_HANDLERS }        from './events.js';
-import { buildBoard, render }    from './renderer.js';
+import { buildBoard, render, flashCell } from './renderer.js';
 import { updateHUD }             from './hud.js';
 import { showModal, closeModal } from '../../shared/modal.js';
 import { createLog }             from '../../shared/log.js';
@@ -16,6 +16,7 @@ let currentIndex = 0;
 let returnPos    = null;
 let levelCache   = {};
 let shopOpen     = false;
+let chosenClass  = 'warrior';
 
 const boardEl = () => document.getElementById('board');
 const logEl   = () => document.getElementById('log');
@@ -77,6 +78,9 @@ function handleEvent(state, key, event) {
   if (result.msg)   log(result.msg, result.cls);
   if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
   if (result.leveledUp) log(`⭐ ¡Subiste al nivel ${result.newLevel}! +2 HP máximo`, 'ok');
+
+  if (result.cls === 'danger') flashCell(state.pos[0], state.pos[1], 'flash-dmg');
+  if (result.cls === 'loot' || result.cls === 'ok') flashCell(state.pos[0], state.pos[1], 'flash-loot');
 
   if (result.died) { gameOver(); return; }
 
@@ -165,7 +169,7 @@ function winGame() {
     showModal(
       '¡Victoria Total!',
       `Conquistaste la mazmorra completa.\n\nTurnos: ${G.turns} | Oro: ${G.player.gold} | HP: ${G.player.hp}/${G.player.maxHp} | Nivel: ${G.player.level}`,
-      [{ label: 'Nueva partida', cls: 'primary', fn: () => restartGame(levels) }]
+      [{ label: 'Nueva partida', cls: 'primary', fn: () => document.dispatchEvent(new CustomEvent('restart-request')) }]
     );
   }
 }
@@ -176,7 +180,7 @@ function advanceLevel(player) {
   currentIndex++;
   closeModal();
   logEl().innerHTML = '';
-  G = initState(levels[currentIndex]);
+  G = initState(levels[currentIndex], chosenClass);
   G.player = { ...player };
   revealAround(G, G.pos[0], G.pos[1], G.player.visionRange);
   buildBoard(G.board, boardEl(), onCellClick, () => G);
@@ -193,7 +197,7 @@ function goBackLevel() {
   currentIndex--;
   const prevPlayer = { ...G.player };
   logEl().innerHTML = '';
-  G = initState(levels[currentIndex]);
+  G = initState(levels[currentIndex], chosenClass);
   if (levelCache[currentIndex]) G.events = levelCache[currentIndex].events;
   G.player = { ...prevPlayer };
   if (returnPos) G.pos = [...returnPos];
@@ -215,18 +219,19 @@ function gameOver() {
   showModal(
     '¡Has muerto!',
     `La mazmorra reclamó otra víctima.\n\nTurnos: ${G.turns} | Oro acumulado: ${G.player.gold}`,
-    [{ label: 'Intentar de nuevo', cls: 'danger', fn: () => restartGame(levels) }]
+    [{ label: 'Intentar de nuevo', cls: 'danger', fn: () => document.dispatchEvent(new CustomEvent('restart-request')) }]
   );
 }
 
-export function restartGame(levelList) {
+export function restartGame(levelList, classId) {
+  if (classId) chosenClass = classId;
   levels       = levelList;
   currentIndex = 0;
   returnPos    = null;
   levelCache   = {};
   closeModal();
   logEl().innerHTML = '';
-  G = initState(levels[0]);
+  G = initState(levels[0], chosenClass);
   revealAround(G, G.pos[0], G.pos[1], G.player.visionRange);
   buildBoard(G.board, boardEl(), onCellClick, () => G);
   render(G, boardEl());
@@ -247,10 +252,7 @@ function tryOpen(dr, dc) {
   const key = `${nr},${nc}`;
   const event = G.events[key];
   if (!event || event.type !== 'treasure') return;
-
-  // TODO: calcular probabilidad según player.openChance
-  const success = true;
-
+  const success = roll(1, 8) > G.player.dex + rollSum(G.player.dexDice || 1);
   if (!success) {
     log('🔒 Fallaste al abrir el cofre.', 'danger');
     render(G, boardEl());
@@ -260,9 +262,36 @@ function tryOpen(dr, dc) {
 
   const result = EVENT_HANDLERS.treasure(G, key, event.data);
 
+  flashCell(nr, nc, 'flash-loot');
+
   if (result.msg) log(result.msg, result.cls);
   if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
   if (result.leveledUp) log(`⭐ ¡Subiste al nivel ${result.newLevel}! +2 HP máximo`, 'ok');
+
+  render(G, boardEl());
+  updateHUD(G);
+}
+
+// ── door ───────────────────────────────────────────────────────────────────
+
+function tryOpenDoor(dr, dc) {
+  if (!G || G.over) return;
+  if (shopOpen) return;
+  if (G.stepsRemaining <= 0) return;
+  const [r, c] = G.pos;
+  const nr = r + dr, nc = c + dc;
+  if (G.board.map[nr][nc] !== 'door') return;
+
+  if (roll(1, 8) > G.player.dex + rollSum(G.player.dexDice || 1)) {
+    log('🚪 La puerta está atascada. No lográs abrirla.', 'danger');
+    render(G, boardEl());
+    updateHUD(G);
+    return;
+  }
+
+  G.board.map[nr][nc] = 'floor';
+  log('🚪 Abriste la puerta.', 'ok');
+  flashCell(nr, nc, 'flash-loot');
 
   render(G, boardEl());
   updateHUD(G);
@@ -274,6 +303,13 @@ function tryOpen(dr, dc) {
 // murió (y ya disparó gameOver), para que el que llama corte lo que sigue.
 function resolveCombatAt(key, enemy) {
   const result = resolveAttackRound(G, enemy);
+  const [er, ec] = key.split(',').map(Number);
+
+  flashCell(er, ec, 'flash-dmg-enemy');
+
+  if (result.playerDied || !result.died) {
+    flashCell(G.pos[0], G.pos[1], 'flash-dmg');
+  }
 
   if (result.lines) result.lines.forEach(l => log(l.txt, l.cls));
   if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
@@ -350,13 +386,10 @@ export function trySearch() {
   for (const key of G.visible) {
     const event = G.events[key];
     if (!event || (event.type !== 'potion' && event.type !== 'trap')) continue;
-    // TODO: calcular probabilidad según player.searchChance
-    const success = true;
-    if (success) {
-      if (G.searched.has(key)) continue;
-      G.searched.add(key);
-      found.push(event.type === 'potion' ? 'una poción' : 'una trampa');
-    }
+    if (G.searched.has(key)) continue;
+    if (roll(1, 8) > G.player.dex + rollSum(G.player.dexDice || 1)) continue;
+    G.searched.add(key);
+    found.push(event.type === 'potion' ? 'una poción' : 'una trampa');
   }
 
   if (found.length === 0) {
@@ -385,6 +418,8 @@ function onCellClick(r, c) {
     tryAttack(dr, dc);
   } else if (ev?.type === 'treasure') {
     tryOpen(dr, dc);
+  } else if (G.board.map[r][c] === 'door') {
+    tryOpenDoor(dr, dc);
   } else {
     tryMove(dr, dc);
   }

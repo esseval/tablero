@@ -275,10 +275,11 @@ water: { passable: true, asset: "water" }
 
 ---
 
-☐ ## 8. Animación de daño
+☐ ## 8. Animación de combate
 
-**Objetivo:** Mostrar un flash rojo en la celda del jugador al recibir daño
-y un flash amarillo al recoger oro o pociones.
+**Objetivo:** Mostrar un flash rojo en la celda del jugador al recibir daño, 
+un flash naranja en la celda del enemigo al recibir daño, un flash amarillo 
+al recoger oro y un flash azul al recoger pociones.
 
 **Archivos a modificar:** `js/renderer.js`, `js/game.js`, `css/style.css`
 
@@ -292,9 +293,13 @@ que devuelve cada resultado (`'danger'` = daño, `'loot'`/`'ok'` = beneficio).
 /* En style.css */
 .cell.flash-dmg  { animation: flash-dmg  .35s ease-out; }
 .cell.flash-loot { animation: flash-loot .35s ease-out; }
+.cell.flash-dmg-enemy { animation: flash-loot .35s ease-out; }
+.cell.flash-health { animation: flash-loot .35s ease-out; }
 
 @keyframes flash-dmg  { 0%{ filter:brightness(3) sepia(1) hue-rotate(-20deg) } 100%{ filter:none } }
+@keyframes flash-dmg-enemy  { 0%{ filter:brightness(3) sepia(1) hue-rotate(-20deg) } 100%{ filter:none } }
 @keyframes flash-loot { 0%{ filter:brightness(3) sepia(1) hue-rotate(30deg)  } 100%{ filter:none } }
+@keyframes flash-health { 0%{ filter:brightness(3) sepia(1) hue-rotate(30deg)  } 100%{ filter:none } }
 ```
 
 ```js

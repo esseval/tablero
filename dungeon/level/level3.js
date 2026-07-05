@@ -1,4 +1,3 @@
-import { PLAYER_BASE } from '../player.js';
 import { createEnemy } from '../enemies.js';
 
 export default {
@@ -7,23 +6,23 @@ export default {
     rows: 12,
     cols: 12,
     startPos: [1, 1],
-    player: { ...PLAYER_BASE }
   },
   tileset: {
     floor:    { passable: true,  asset: "floor"    },
     wall:     { passable: false, asset: "wall"     },
     exit:     { passable: true,  asset: "exit"     },
-    entrance: { passable: true,  asset: "entrance" }
+    entrance: { passable: true,  asset: "entrance" },
+    door:     { passable: false, asset: "door"     }
   },
   map: [
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"],
-    ["wall","entrance","floor","floor","wall","floor","floor","floor","floor","wall","floor","wall"],
-    ["wall","floor","wall","floor","floor","floor","wall","wall","floor","floor","floor","wall"],
+    ["wall","entrance","floor","floor","wall","floor","floor","floor","floor","wall","door","wall"],
+    ["wall","floor","wall","floor","door","floor","wall","wall","floor","floor","floor","wall"],
     ["wall","floor","wall","wall","wall","floor","floor","wall","floor","wall","floor","wall"],
     ["wall","floor","floor","floor","floor","floor","wall","wall","floor","wall","floor","wall"],
     ["wall","wall","wall","wall","floor","wall","floor","floor","floor","floor","floor","wall"],
     ["wall","floor","floor","wall","floor","wall","floor","wall","wall","wall","floor","wall"],
-    ["wall","floor","wall","floor","floor","floor","floor","wall","floor","floor","floor","wall"],
+    ["wall","floor","wall","floor","floor","floor","door","wall","floor","floor","floor","wall"],
     ["wall","floor","wall","wall","wall","floor","wall","floor","floor","wall","floor","wall"],
     ["wall","floor","floor","floor","wall","floor","floor","floor","wall","floor","floor","wall"],
     ["wall","wall","floor","wall","floor","floor","wall","floor","floor","floor","exit","wall"],
