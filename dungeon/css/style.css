@@ -48,9 +48,9 @@ h1{color:#e8c84a;font-size:1.3rem;letter-spacing:4px;margin-bottom:.75rem;text-t
 
 .cell{
   width:52px;height:52px;position:relative;overflow:hidden;
-  cursor:pointer;transition:filter .1s;
+  cursor:pointer;
 }
-.cell:hover{filter:brightness(1.2)}
+.cell:hover{outline:1px solid rgba(255,255,255,0.12)}
 .cell.wall{cursor:default}
 .cell.wall:hover{filter:none}
 
@@ -151,3 +151,25 @@ button.danger:hover{background:#4a1010}
 .class-card .class-desc{color:#888;font-size:.72rem;margin-bottom:.5rem;line-height:1.4}
 .class-card .class-stat{color:#aaa;font-size:.72rem}
 .class-card .class-stat span{color:#666}
+
+.cell.flash-dmg         { animation: flash-dmg         .4s ease-out; }
+.cell.flash-dmg-enemy   { animation: flash-dmg-enemy   .4s ease-out; }
+.cell.flash-loot        { animation: flash-loot        .4s ease-out; }
+.cell.flash-health      { animation: flash-health      .4s ease-out; }
+
+@keyframes flash-dmg {
+  0% { filter: brightness(5) saturate(3) sepia(1) hue-rotate(-20deg) drop-shadow(0 0 18px rgba(255,20,0,0.95)); }
+  100%{ filter: brightness(1) saturate(1) sepia(0) hue-rotate(0deg)  drop-shadow(0 0 0  transparent); }
+}
+@keyframes flash-dmg-enemy {
+  0% { filter: brightness(5) saturate(3) sepia(1) hue-rotate(200deg) drop-shadow(0 0 18px rgba(255,120,0,0.95)); }
+  100%{ filter: brightness(1) saturate(1) sepia(0) hue-rotate(0deg)  drop-shadow(0 0 0  transparent); }
+}
+@keyframes flash-loot {
+  0% { filter: brightness(5) saturate(3) sepia(1) hue-rotate(30deg)  drop-shadow(0 0 18px rgba(255,215,0,0.95)); }
+  100%{ filter: brightness(1) saturate(1) sepia(0) hue-rotate(0deg)  drop-shadow(0 0 0  transparent); }
+}
+@keyframes flash-health {
+  0% { filter: brightness(5) saturate(3) sepia(1) hue-rotate(280deg) drop-shadow(0 0 18px rgba(50,150,255,0.95)); }
+  100%{ filter: brightness(1) saturate(1) sepia(0) hue-rotate(0deg)  drop-shadow(0 0 0  transparent); }
+}

@@ -1,7 +1,7 @@
 import { initState }             from './state.js';
 import { revealAround }          from './fog.js';
 import { EVENT_HANDLERS }        from './events.js';
-import { buildBoard, render }    from './renderer.js';
+import { buildBoard, render, flashCell } from './renderer.js';
 import { updateHUD }             from './hud.js';
 import { showModal, closeModal } from '../../shared/modal.js';
 import { createLog }             from '../../shared/log.js';
@@ -78,6 +78,9 @@ function handleEvent(state, key, event) {
   if (result.msg)   log(result.msg, result.cls);
   if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
   if (result.leveledUp) log(`⭐ ¡Subiste al nivel ${result.newLevel}! +2 HP máximo`, 'ok');
+
+  if (result.cls === 'danger') flashCell(state.pos[0], state.pos[1], 'flash-dmg');
+  if (result.cls === 'loot' || result.cls === 'ok') flashCell(state.pos[0], state.pos[1], 'flash-loot');
 
   if (result.died) { gameOver(); return; }
 
@@ -262,6 +265,8 @@ function tryOpen(dr, dc) {
 
   const result = EVENT_HANDLERS.treasure(G, key, event.data);
 
+  flashCell(nr, nc, 'flash-loot');
+
   if (result.msg) log(result.msg, result.cls);
   if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
   if (result.leveledUp) log(`⭐ ¡Subiste al nivel ${result.newLevel}! +2 HP máximo`, 'ok');
@@ -276,6 +281,13 @@ function tryOpen(dr, dc) {
 // murió (y ya disparó gameOver), para que el que llama corte lo que sigue.
 function resolveCombatAt(key, enemy) {
   const result = resolveAttackRound(G, enemy);
+  const [er, ec] = key.split(',').map(Number);
+
+  flashCell(er, ec, 'flash-dmg-enemy');
+
+  if (result.playerDied || !result.died) {
+    flashCell(G.pos[0], G.pos[1], 'flash-dmg');
+  }
 
   if (result.lines) result.lines.forEach(l => log(l.txt, l.cls));
   if (result.xpGained) log(`✨ +${result.xpGained} XP`, 'loot');
