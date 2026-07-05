@@ -38,8 +38,8 @@ function showClassSelector() {
     card.innerHTML = `
       <h3>${cls.name}</h3>
       <div class="class-desc">${cls.desc}</div>
-      <div class="class-stat">❤ ${s.hp}  ⚔ ${s.atk}  🛡 ${s.def}</div>
-      <div class="class-stat">🎲 <span>mov</span> ${s.moveDice}d6  <span>atk</span> ${s.atkDice}d6</div>
+      <div class="class-stat">❤ ${s.hp}  ⚔ ${s.atk}  🛡 ${s.def}  🤸 ${s.dex}</div>
+      <div class="class-stat">🎲 <span>mov</span> ${s.moveDice}d6  <span>atk</span> ${s.atkDice}d6  <span>dex</span> ${s.dexDice}d6</div>
       <div class="class-stat">🪙 ${s.gold}  👁 ${s.visionRange}</div>
     `;
     card.addEventListener('click', () => {

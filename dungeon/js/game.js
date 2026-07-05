@@ -252,10 +252,7 @@ function tryOpen(dr, dc) {
   const key = `${nr},${nc}`;
   const event = G.events[key];
   if (!event || event.type !== 'treasure') return;
-
-  // TODO: calcular probabilidad según player.openChance
-  const success = true;
-
+  const success = roll(1, 8) > G.player.dex + rollSum(G.player.dexDice || 1);
   if (!success) {
     log('🔒 Fallaste al abrir el cofre.', 'danger');
     render(G, boardEl());
@@ -284,6 +281,13 @@ function tryOpenDoor(dr, dc) {
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
   if (G.board.map[nr][nc] !== 'door') return;
+
+  if (roll(1, 8) > G.player.dex + rollSum(G.player.dexDice || 1)) {
+    log('🚪 La puerta está atascada. No lográs abrirla.', 'danger');
+    render(G, boardEl());
+    updateHUD(G);
+    return;
+  }
 
   G.board.map[nr][nc] = 'floor';
   log('🚪 Abriste la puerta.', 'ok');
@@ -382,13 +386,10 @@ export function trySearch() {
   for (const key of G.visible) {
     const event = G.events[key];
     if (!event || (event.type !== 'potion' && event.type !== 'trap')) continue;
-    // TODO: calcular probabilidad según player.searchChance
-    const success = true;
-    if (success) {
-      if (G.searched.has(key)) continue;
-      G.searched.add(key);
-      found.push(event.type === 'potion' ? 'una poción' : 'una trampa');
-    }
+    if (G.searched.has(key)) continue;
+    if (roll(1, 8) > G.player.dex + rollSum(G.player.dexDice || 1)) continue;
+    G.searched.add(key);
+    found.push(event.type === 'potion' ? 'una poción' : 'una trampa');
   }
 
   if (found.length === 0) {
