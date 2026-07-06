@@ -12,13 +12,14 @@ export default {
     wall:     { passable: false, asset: "wall"     },
     exit:     { passable: true,  asset: "exit"     },
     entrance: { passable: true,  asset: "entrance" },
-    door:     { passable: false, asset: "door"     }
+    door:        { passable: false, asset: "door"     },
+    'door-locked': { passable: false, asset: "door-locked.svg" }
   },
   map: [
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"],
     ["wall","entrance","floor","floor","floor","floor","floor","floor","floor","floor","door","floor","floor","floor","floor","floor","floor","floor","floor","wall"],
     ["wall","floor","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","floor","wall"],
-    ["wall","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","wall","floor","wall"],
+    ["wall","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","door-locked","wall","floor","wall"],
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","floor","wall","floor","wall"],
     ["wall","floor","floor","floor","floor","door","floor","floor","floor","floor","floor","floor","floor","floor","floor","wall","floor","wall","floor","wall"],
     ["wall","floor","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","floor","wall","floor","wall","floor","wall"],
@@ -38,6 +39,7 @@ export default {
     "9,14": { type:"enemy", data: createEnemy('troll',    { name:"Troll Guardián",      hp:24, atk:9, def:5, gold:16, xp:22 })},
     "10,3": { type:"enemy", data: createEnemy('skeleton', { name:"Espectro",            hp:18, atk:8, def:3, gold:12, xp:18 })},
     "10,8": { type:"enemy", data: createEnemy('goblin',   { name:"Goblin Jefe",         hp:18, atk:7, def:3, gold:14, xp:18 })},
+    "2,3":  { type:"key",      data:{ keys:1 }},
     "1,6":  { type:"treasure", data:{ gold:18, msg:"Un cofre cubierto de telarañas. ¡18 monedas de oro!" }},
     "7,17": { type:"treasure", data:{ gold:25, msg:"Tesoro de un paladín caído. +25 oro", xp:8 }},
     "3,12": { type:"potion",   data:{ hp:10,  msg:"Una poción de vida. Recuperás 10 HP." }},

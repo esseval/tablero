@@ -19,7 +19,12 @@ export function getEventAssetId(ev) {
   if (ev.type === 'potion')   return 'potion';
   if (ev.type === 'trap')     return 'trap';
   if (ev.type === 'npc')      return 'npc';
+  if (ev.type === 'key')      return 'key';
   return null;
+}
+
+function assetUrl(name) {
+  return `assets/${name}${name.includes('.') ? '' : '.png'}`;
 }
 
 export function buildBoard(boardData, container, onCellClick, getState) {
@@ -90,7 +95,7 @@ export function render(state, container) {
       if (tile && !tile.passable)  el.className += ' wall';
 
       const assetId = tile ? tile.asset : 'floor';
-      el.innerHTML = `<img class="cell-bg" src="assets/${assetId}.png" alt="">`;
+      el.innerHTML = `<img class="cell-bg" src="${assetUrl(assetId)}" alt="">`;
 
       if (r === pr && c === pc) {
         const playerAsset = state.player.class ? `player-${state.player.class}` : 'player';
@@ -104,7 +109,7 @@ export function render(state, container) {
           } else {
             const entityId = getEventAssetId(ev);
             if (entityId) {
-              el.innerHTML += `<div class="cell-entity"><img src="assets/${entityId}.png" alt="${ev.type}"></div>`;
+              el.innerHTML += `<div class="cell-entity"><img src="${assetUrl(entityId)}" alt="${ev.type}"></div>`;
             }
           }
         }

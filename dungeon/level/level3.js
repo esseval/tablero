@@ -12,7 +12,8 @@ export default {
     wall:     { passable: false, asset: "wall"     },
     exit:     { passable: true,  asset: "exit"     },
     entrance: { passable: true,  asset: "entrance" },
-    door:     { passable: false, asset: "door"     }
+    door:        { passable: false, asset: "door"     },
+    'door-locked': { passable: false, asset: "door-locked.svg" }
   },
   map: [
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"],
@@ -20,7 +21,7 @@ export default {
     ["wall","floor","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","floor","wall"],
     ["wall","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","wall","floor","wall"],
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","floor","wall","floor","wall"],
-    ["wall","floor","floor","floor","floor","door","floor","floor","floor","floor","floor","floor","floor","floor","floor","wall","floor","wall","floor","wall"],
+    ["wall","floor","floor","floor","floor","door-locked","floor","floor","floor","floor","floor","floor","floor","floor","floor","wall","floor","wall","floor","wall"],
     ["wall","floor","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","floor","wall","floor","wall","floor","wall"],
     ["wall","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","door","floor","floor","floor","wall","floor","floor","floor","wall"],
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","floor","wall","wall","wall","floor","wall"],

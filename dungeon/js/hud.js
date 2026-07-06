@@ -11,6 +11,7 @@ export function updateHUD(state) {
   document.getElementById('stat-dice-dex').textContent  = p.dexDice;
   document.getElementById('stat-dice-mov').textContent  = p.moveDice;
   document.getElementById('stat-gold-val').textContent  = p.gold;
+  document.getElementById('stat-keys-val').textContent  = p.keys;
   document.getElementById('stat-turns-val').textContent  = state.turns;
   document.getElementById('stat-steps-val').textContent  = state.stepsRemaining;
   const hpPct = Math.max(0, (p.hp / p.maxHp) * 100);

@@ -12,6 +12,7 @@ export const EVENT_HANDLERS = {
   },
   treasure(state, key, data) {
     state.player.gold += data.gold;
+    if (data.keys) state.player.keys += data.keys;
     const xpGained = data.xp || 0;
     let leveledUp = false;
     if (xpGained) {
@@ -19,7 +20,9 @@ export const EVENT_HANDLERS = {
       leveledUp = checkLevelUp(state.player);
     }
     delete state.events[key];
-    return { msg: '💰 ' + data.msg, cls: 'loot', xpGained, leveledUp, newLevel: state.player.level };
+    let extra = '';
+    if (data.keys) extra = ` 🔑 x${data.keys}`;
+    return { msg: '💰 ' + data.msg + extra, cls: 'loot', xpGained, leveledUp, newLevel: state.player.level };
   },
   potion(state, key, data) {
     if (data.hidden !== false && !state.searched.has(key)) return {};
@@ -38,5 +41,11 @@ export const EVENT_HANDLERS = {
   npc(state, key, data) {
     const available = data.items.filter(item => item.stock === undefined || item.stock > 0);
     return { shop: { ...data, items: available } };    
+  },
+  key(state, key, data) {
+    const n = data.keys || 1;
+    state.player.keys += n;
+    delete state.events[key];
+    return { msg: `🔑 Encontraste ${n > 1 ? n + ' llaves' : 'una llave'}. (${state.player.keys})`, cls: 'ok' };
   },
 };

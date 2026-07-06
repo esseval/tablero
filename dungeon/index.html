@@ -35,6 +35,7 @@
       <div class="stat-row"><span class="stat-label">Defensa</span><span class="stat-value" id="stat-def-val">3</span></div>
       <div class="stat-row"><span class="stat-label">Destreza</span><span class="stat-value" id="stat-dex-val">2</span></div>
       <div class="stat-row"><span class="stat-label">Oro</span><span class="stat-value" id="stat-gold-val">0</span></div>
+      <div class="stat-row"><span class="stat-label">Llaves</span><span class="stat-value" id="stat-keys-val">0</span></div>
 
       <div class="hud-title">Experiencia</div>
       <div class="stat-row"><span class="stat-label">Nivel</span><span class="stat-value" id="stat-level-val">1</span></div>
@@ -80,18 +81,20 @@
             <button data-tile="wall"     class="palette-btn">▧ Wall</button>
             <button data-tile="exit"     class="palette-btn">🚪 Exit</button>
             <button data-tile="entrance" class="palette-btn">🚪 Entr.</button>
-            <button data-tile="door"     class="palette-btn">🚪 Door</button>
-          </div>
+          <button data-tile="door"        class="palette-btn">🚪 Door</button>
+          <button data-tile="door_locked" class="palette-btn">🔒 Locked</button>
         </div>
-        <div class="editor-section">
-          <div class="editor-section-title">Events</div>
-          <div class="palette">
-            <button data-event="enemy"    class="palette-btn">👾 Enemy</button>
-            <button data-event="treasure" class="palette-btn">💰 Chest</button>
-            <button data-event="potion"   class="palette-btn">🧪 Potion</button>
-            <button data-event="trap"     class="palette-btn">⚠ Trap</button>
-            <button data-event="npc"      class="palette-btn">🧙 NPC</button>
-            <button data-event="__erase__" class="palette-btn erase">✕ Erase</button>
+      </div>
+      <div class="editor-section">
+        <div class="editor-section-title">Events</div>
+        <div class="palette">
+          <button data-event="enemy"    class="palette-btn">👾 Enemy</button>
+          <button data-event="treasure" class="palette-btn">💰 Chest</button>
+          <button data-event="potion"   class="palette-btn">🧪 Potion</button>
+          <button data-event="trap"     class="palette-btn">⚠ Trap</button>
+          <button data-event="npc"      class="palette-btn">🧙 NPC</button>
+          <button data-event="key"      class="palette-btn">🔑 Key</button>
+          <button data-event="__erase__" class="palette-btn erase">✕ Erase</button>
           </div>
         </div>
         <div class="editor-actions">

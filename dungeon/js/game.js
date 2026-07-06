@@ -57,6 +57,7 @@ function makeDefaultEvent(type) {
     case 'treasure':  return { type: 'treasure',  data: { gold: 10, msg: 'Treasure! +10 gold' } };
     case 'potion':    return { type: 'potion',    data: { hp: 8, msg: 'Potion. +8 HP' } };
     case 'trap':      return { type: 'trap',      data: { dmg: 4, msg: 'Trap! -4 HP' } };
+    case 'key':       return { type: 'key',       data: { keys: 1 } };
     case 'npc':       return { type: 'npc',       data: { name: 'Merchant', msg: 'Welcome.', items: [{ type: 'potion', hp: 10, price: 8, stock: 3 }] } };
     default:          return null;
   }
@@ -355,6 +356,27 @@ function tryOpenDoor(dr, dc) {
   updateHUD(G);
 }
 
+// ── locked door ─────────────────────────────────────────────────────────────
+
+function tryOpenDoorLocked(dr, dc) {
+  if (!G || G.over) return;
+  if (shopOpen) return;
+  if (G.stepsRemaining <= 0) return;
+  const [r, c] = G.pos;
+  const nr = r + dr, nc = c + dc;
+  if (G.board.map[nr][nc] !== 'door-locked') return;
+  if (G.player.keys < 1) {
+    log('🔒 La puerta está cerrada con llave. Necesitás una llave.', 'danger');
+    return;
+  }
+  G.player.keys--;
+  G.board.map[nr][nc] = 'floor';
+  log('🔓 Abriste la puerta con una llave.', 'ok');
+  flashCell(nr, nc, 'flash-loot');
+  render(G, boardEl());
+  updateHUD(G);
+}
+
 // ── attack ─────────────────────────────────────────────────────────────────
 
 // Resuelve un asalto contra el enemigo en `key`. Retorna true si el jugador
@@ -479,6 +501,8 @@ function onCellClick(r, c) {
     tryOpen(dr, dc);
   } else if (G.board.map[r][c] === 'door') {
     tryOpenDoor(dr, dc);
+  } else if (G.board.map[r][c] === 'door-locked') {
+    tryOpenDoorLocked(dr, dc);
   } else {
     tryMove(dr, dc);
   }
