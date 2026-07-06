@@ -72,6 +72,32 @@
 
     <div>
       <div id="board" tabindex="0"></div>
+      <div id="editor-bar">
+        <div class="editor-section">
+          <div class="editor-section-title">Tiles</div>
+          <div class="palette">
+            <button data-tile="floor"    class="palette-btn active">▦ Floor</button>
+            <button data-tile="wall"     class="palette-btn">▧ Wall</button>
+            <button data-tile="exit"     class="palette-btn">🚪 Exit</button>
+            <button data-tile="entrance" class="palette-btn">🚪 Entr.</button>
+            <button data-tile="door"     class="palette-btn">🚪 Door</button>
+          </div>
+        </div>
+        <div class="editor-section">
+          <div class="editor-section-title">Events</div>
+          <div class="palette">
+            <button data-event="enemy"    class="palette-btn">👾 Enemy</button>
+            <button data-event="treasure" class="palette-btn">💰 Chest</button>
+            <button data-event="potion"   class="palette-btn">🧪 Potion</button>
+            <button data-event="trap"     class="palette-btn">⚠ Trap</button>
+            <button data-event="npc"      class="palette-btn">🧙 NPC</button>
+            <button data-event="__erase__" class="palette-btn erase">✕ Erase</button>
+          </div>
+        </div>
+        <div class="editor-actions">
+          <button id="btn-export-edited" class="primary">💾 Export</button>
+        </div>
+      </div>
     </div>
 
     <div id="io-bar">
@@ -81,7 +107,9 @@
       <button class="danger" id="btn-restart">Nueva partida</button>
       <button id="btn-search">Buscar</button>
       <button id="btn-roll-dice">Lanzar dados</button>
-  <button id="btn-end-turn" class="primary">Terminar turno</button>
+      <button id="btn-end-turn" class="primary">Terminar turno</button>
+      <div class="io-sep"></div>
+      <button id="btn-editor">✏️ Editor</button>
     </div>
   </div>  
 </div>

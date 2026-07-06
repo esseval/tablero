@@ -129,6 +129,21 @@ button.danger:hover{background:#4a1010}
 
 #controls{margin-top:.6rem;font-size:.72rem;color:#444;text-align:center;line-height:1.8}
 
+.io-sep{height:1px;background:#2e2e2e;width:100%;margin:.2rem 0}
+
+/* EDITOR */
+#editor-bar{display:none;background:#141414;border:1px solid #2e2e2e;border-radius:6px;padding:.75rem;margin-top:.75rem;flex-direction:column;gap:.75rem}
+#editor-bar.on{display:flex}
+#editor-bar .editor-section-title{color:#e8c84a;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid #2a2a2a;padding-bottom:.35rem;margin-bottom:.4rem}
+#editor-bar .palette{display:flex;flex-wrap:wrap;gap:.35rem}
+#editor-bar .palette-btn{font-size:.72rem;padding:.3rem .5rem;background:#1a1a1a;border:1px solid #333;border-radius:4px;color:#888;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+#editor-bar .palette-btn:hover{background:#222;border-color:#555;color:#ccc}
+#editor-bar .palette-btn.active{border-color:#e8c84a;color:#e8c84a;background:#2a2008}
+#editor-bar .palette-btn.erase{border-color:#6b3030;color:#e06060}
+#editor-bar .palette-btn.erase.active{border-color:#e03030;color:#ff6060;background:#3a1010}
+#editor-bar .editor-actions{display:flex;gap:.5rem;justify-content:stretch}
+#editor-bar .editor-actions button{flex:1}
+
 /* CLASS SELECTOR */
 #class-overlay{
   display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);

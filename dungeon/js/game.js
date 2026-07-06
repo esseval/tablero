@@ -18,6 +18,64 @@ let levelCache   = {};
 let shopOpen     = false;
 let chosenClass  = 'warrior';
 
+// ── editor ──────────────────────────────────────────────────────────────────
+
+let editorMode     = false;
+let editorTile     = 'wall';
+let editorEvent    = null; // null = painting tiles; non-null = placing events
+
+export function toggleEditor() {
+  editorMode = !editorMode;
+  document.getElementById('editor-bar')?.classList.toggle('on', editorMode);
+  if (editorMode && G) {
+    const rows = G.board.map.length;
+    const cols = G.board.map[0].length;
+    for (let r = 0; r < rows; r++)
+      for (let c = 0; c < cols; c++)
+        G.visible.add(`${r},${c}`);
+    G.stepsRemaining = 999;
+  } else if (G) {
+    revealAround(G, G.pos[0], G.pos[1], G.player.visionRange);
+    G.stepsRemaining = 0;
+  }
+  log(editorMode ? '✏️ Editor activado' : 'Modo juego', 'sys');
+  if (G) { render(G, boardEl()); updateHUD(G); }
+}
+
+export function setEditorTile(tileId) {
+  editorEvent = null;
+  editorTile = tileId;
+}
+
+export function setEditorEvent(type) {
+  editorEvent = type;
+}
+
+function makeDefaultEvent(type) {
+  switch (type) {
+    case 'enemy':     return { type: 'enemy',     data: { id: 'spider', name: 'Enemy', hp: 6, maxHp: 6, atk: 3, def: 1, gold: 3, xp: 5, moveDice: 1 } };
+    case 'treasure':  return { type: 'treasure',  data: { gold: 10, msg: 'Treasure! +10 gold' } };
+    case 'potion':    return { type: 'potion',    data: { hp: 8, msg: 'Potion. +8 HP' } };
+    case 'trap':      return { type: 'trap',      data: { dmg: 4, msg: 'Trap! -4 HP' } };
+    case 'npc':       return { type: 'npc',       data: { name: 'Merchant', msg: 'Welcome.', items: [{ type: 'potion', hp: 10, price: 8, stock: 3 }] } };
+    default:          return null;
+  }
+}
+
+function editorClick(r, c) {
+  const key = `${r},${c}`;
+  if (editorEvent) {
+    if (editorEvent === '__erase__') {
+      delete G.events[key];
+    } else {
+      G.events[key] = makeDefaultEvent(editorEvent);
+    }
+  } else {
+    G.board.map[r][c] = editorTile;
+  }
+  render(G, boardEl());
+}
+
 const boardEl = () => document.getElementById('board');
 const logEl   = () => document.getElementById('log');
 
@@ -408,6 +466,7 @@ export function trySearch() {
 function onCellClick(r, c) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (editorMode) { editorClick(r, c); return; }
   const [pr, pc] = G.pos;
   const dr = r - pr, dc = c - pc;
   if (Math.abs(dr) + Math.abs(dc) !== 1) return;
@@ -428,6 +487,7 @@ function onCellClick(r, c) {
 // ── I/O ───────────────────────────────────────────────────────────────────
 
 export function exportBoard() {
+  levels[currentIndex].events = { ...G.events };
   download(JSON.stringify(levels[currentIndex], null, 2), 'tablero.json', 'application/json');
 }
 
