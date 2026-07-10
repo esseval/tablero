@@ -13,7 +13,7 @@ export default {
     exit:     { passable: true,  asset: "exit"     },
     entrance: { passable: true,  asset: "entrance" },
     door:        { passable: false, asset: "door"     },
-    'door-locked': { passable: false, asset: "door-locked.svg" }
+    'door-locked': { passable: false, asset: "door-locked" }
   },
   map: [
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"],
