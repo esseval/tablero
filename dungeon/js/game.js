@@ -18,6 +18,65 @@ let levelCache   = {};
 let shopOpen     = false;
 let chosenClass  = 'warrior';
 
+// ── editor ──────────────────────────────────────────────────────────────────
+
+let editorMode     = false;
+let editorTile     = 'wall';
+let editorEvent    = null; // null = painting tiles; non-null = placing events
+
+export function toggleEditor() {
+  editorMode = !editorMode;
+  document.getElementById('editor-bar')?.classList.toggle('on', editorMode);
+  if (editorMode && G) {
+    const rows = G.board.map.length;
+    const cols = G.board.map[0].length;
+    for (let r = 0; r < rows; r++)
+      for (let c = 0; c < cols; c++)
+        G.visible.add(`${r},${c}`);
+    G.stepsRemaining = 999;
+  } else if (G) {
+    revealAround(G, G.pos[0], G.pos[1], G.player.visionRange);
+    G.stepsRemaining = 0;
+  }
+  log(editorMode ? '✏️ Editor activado' : 'Modo juego', 'sys');
+  if (G) { render(G, boardEl()); updateHUD(G); }
+}
+
+export function setEditorTile(tileId) {
+  editorEvent = null;
+  editorTile = tileId;
+}
+
+export function setEditorEvent(type) {
+  editorEvent = type;
+}
+
+function makeDefaultEvent(type) {
+  switch (type) {
+    case 'enemy':     return { type: 'enemy',     data: { id: 'spider', name: 'Enemy', hp: 6, maxHp: 6, atk: 3, def: 1, gold: 3, xp: 5, moveDice: 1 } };
+    case 'treasure':  return { type: 'treasure',  data: { gold: 10, msg: 'Treasure! +10 gold' } };
+    case 'potion':    return { type: 'potion',    data: { hp: 8, msg: 'Potion. +8 HP' } };
+    case 'trap':      return { type: 'trap',      data: { dmg: 4, msg: 'Trap! -4 HP' } };
+    case 'key':       return { type: 'key',       data: { keys: 1 } };
+    case 'npc':       return { type: 'npc',       data: { name: 'Merchant', msg: 'Welcome.', items: [{ type: 'potion', hp: 10, price: 8, stock: 3 }] } };
+    default:          return null;
+  }
+}
+
+function editorClick(r, c) {
+  const key = `${r},${c}`;
+  if (editorEvent) {
+    if (editorEvent === '__erase__') {
+      delete G.events[key];
+    } else {
+      G.events[key] = makeDefaultEvent(editorEvent);
+    }
+  } else {
+    G.board.map[r][c] = editorTile;
+  }
+  render(G, boardEl());
+}
+
 const boardEl = () => document.getElementById('board');
 const logEl   = () => document.getElementById('log');
 
@@ -51,6 +110,7 @@ function buyItem(item) {
 
 export function rollDice() {
   if (!G || G.over) return;
+  if (G.stepsRemaining > 0) return;
   const n = G.player.moveDice || 1;
   let total = 0;
   const parts = [];
@@ -61,6 +121,7 @@ export function rollDice() {
   }
   G.stepsRemaining = total;
   G.turns++;
+  G.phase = 'player';
   const desc = parts.join(' + ');
   log(`🎲 ${desc}${n > 1 ? ` = ${total}` : ''} pasos (turno ${G.turns})`, 'sys');
   updateHUD(G);
@@ -98,14 +159,23 @@ function handleEvent(state, key, event) {
   if (state.board.map[state.pos[0]][state.pos[1]] === 'exit') winGame();
 }
 
-// ── end turn ───────────────────────────────────────────────────────────────
+// ── phases ─────────────────────────────────────────────────────────────────
 
-export function endTurn() {
+function startEnemyPhase() {
+  if (G.over) return;
+  G.phase = 'enemy';
+  G.stepsRemaining = 0;
+  updateHUD(G);
   moveEnemies();
+  if (G.over) { render(G, boardEl()); updateHUD(G); return; }
   render(G, boardEl());
   updateHUD(G);
+  rollDice();
   boardEl().focus();
-  //if (!G.over && !G.won) rollDice();
+}
+
+export function endTurn() {
+  startEnemyPhase();
 }
 
 // ── move ──────────────────────────────────────────────────────────────────
@@ -113,6 +183,7 @@ export function endTurn() {
 export function tryMove(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.phase !== 'player') return;
   if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
@@ -145,7 +216,9 @@ export function tryMove(dr, dc) {
   render(G, boardEl());
   updateHUD(G);
 
-  // sin auto-fin-de-turno — el jugador decide cuándo terminar
+  if (G.stepsRemaining <= 0 && !G.over && !shopOpen) {
+    startEnemyPhase();
+  }
 }
 
 // ── lifecycle ─────────────────────────────────────────────────────────────
@@ -246,6 +319,7 @@ export function restartGame(levelList, classId) {
 function tryOpen(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.phase !== 'player') return;
   if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
@@ -277,6 +351,7 @@ function tryOpen(dr, dc) {
 function tryOpenDoor(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.phase !== 'player') return;
   if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
@@ -295,6 +370,30 @@ function tryOpenDoor(dr, dc) {
 
   render(G, boardEl());
   updateHUD(G);
+  startEnemyPhase();
+}
+
+// ── locked door ─────────────────────────────────────────────────────────────
+
+function tryOpenDoorLocked(dr, dc) {
+  if (!G || G.over) return;
+  if (shopOpen) return;
+  if (G.phase !== 'player') return;
+  if (G.stepsRemaining <= 0) return;
+  const [r, c] = G.pos;
+  const nr = r + dr, nc = c + dc;
+  if (G.board.map[nr][nc] !== 'door-locked') return;
+  if (G.player.keys < 1) {
+    log('🔒 La puerta está cerrada con llave. Necesitás una llave.', 'danger');
+    return;
+  }
+  G.player.keys--;
+  G.board.map[nr][nc] = 'floor';
+  log('🔓 Abriste la puerta con una llave.', 'ok');
+  flashCell(nr, nc, 'flash-loot');
+  render(G, boardEl());
+  updateHUD(G);
+  startEnemyPhase();
 }
 
 // ── attack ─────────────────────────────────────────────────────────────────
@@ -325,6 +424,7 @@ function resolveCombatAt(key, enemy) {
 function tryAttack(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.phase !== 'player') return;
   if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
@@ -380,6 +480,7 @@ function moveEnemies() {
 export function trySearch() {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.phase !== 'player') return;
   if (G.stepsRemaining <= 0) return;
 
   const found = [];
@@ -400,7 +501,7 @@ export function trySearch() {
 
   render(G, boardEl());
   updateHUD(G);
-  boardEl().focus();
+  startEnemyPhase();
 }
 
 // ── input (click) ─────────────────────────────────────────────────────────
@@ -408,6 +509,7 @@ export function trySearch() {
 function onCellClick(r, c) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (editorMode) { editorClick(r, c); return; }
   const [pr, pc] = G.pos;
   const dr = r - pr, dc = c - pc;
   if (Math.abs(dr) + Math.abs(dc) !== 1) return;
@@ -420,6 +522,8 @@ function onCellClick(r, c) {
     tryOpen(dr, dc);
   } else if (G.board.map[r][c] === 'door') {
     tryOpenDoor(dr, dc);
+  } else if (G.board.map[r][c] === 'door-locked') {
+    tryOpenDoorLocked(dr, dc);
   } else {
     tryMove(dr, dc);
   }
@@ -428,6 +532,7 @@ function onCellClick(r, c) {
 // ── I/O ───────────────────────────────────────────────────────────────────
 
 export function exportBoard() {
+  levels[currentIndex].events = { ...G.events };
   download(JSON.stringify(levels[currentIndex], null, 2), 'tablero.json', 'application/json');
 }
 

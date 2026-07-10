@@ -1,4 +1,4 @@
-import { restartGame, tryMove, trySearch, exportBoard, importBoard, rollDice, endTurn } from './game.js';
+import { restartGame, tryMove, trySearch, exportBoard, importBoard, rollDice, endTurn, toggleEditor, setEditorTile, setEditorEvent } from './game.js';
 import { MANIFEST } from '../level/manifest.js';
 import { CLASSES } from '../classes.js';
 
@@ -57,5 +57,22 @@ document.getElementById('btn-end-turn').addEventListener('click', endTurn);
 document.getElementById('btn-roll-dice').addEventListener('click', rollDice);
 document.getElementById('btn-restart').addEventListener('click', showClassSelector);
 document.addEventListener('restart-request', showClassSelector);
+
+// ── editor wiring ────────────────────────────────────────────────────────────
+
+document.getElementById('btn-editor').addEventListener('click', toggleEditor);
+
+for (const btn of document.querySelectorAll('#editor-bar .palette-btn')) {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#editor-bar .palette-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tile = btn.dataset.tile;
+    const ev   = btn.dataset.event;
+    if (tile) setEditorTile(tile);
+    if (ev)   setEditorEvent(ev);
+  });
+}
+
+document.getElementById('btn-export-edited').addEventListener('click', exportBoard);
 
 showClassSelector();
