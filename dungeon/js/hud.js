@@ -14,6 +14,9 @@ export function updateHUD(state) {
   document.getElementById('stat-keys-val').textContent  = p.keys;
   document.getElementById('stat-turns-val').textContent  = state.turns;
   document.getElementById('stat-steps-val').textContent  = state.stepsRemaining;
+  const phaseEl = document.getElementById('stat-phase-val');
+  phaseEl.textContent = state.phase === 'player' ? 'Jugador' : 'Mazmorra';
+  phaseEl.className = 'stat-value phase-' + state.phase;
   const hpPct = Math.max(0, (p.hp / p.maxHp) * 100);
   document.getElementById('bar-hp').style.width = hpPct + '%';
   const threshold = xpThreshold(p.level);

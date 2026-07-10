@@ -19,7 +19,7 @@ export default {
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"],
     ["wall","entrance","floor","door-locked","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","wall"],
     ["wall","floor","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","floor","wall"],
-    ["wall","floor","floor","door-locked","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","door-locked","wall","floor","wall"],
+    ["wall","floor","floor","door-locked","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","floor","door","wall","floor","wall"],
     ["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","floor","wall","floor","wall"],
     ["wall","floor","floor","floor","floor","door","floor","floor","floor","floor","floor","floor","floor","floor","floor","wall","floor","wall","floor","wall"],
     ["wall","floor","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","floor","wall","floor","wall","floor","wall"],

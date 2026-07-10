@@ -23,9 +23,10 @@ h1{color:#e8c84a;font-size:1.3rem;letter-spacing:4px;margin-bottom:.75rem;text-t
   justify-content:center; */
 
   flex-direction: column;
-  align-items: flex-start;
+  /* align-items: flex-start; */
   width: 200px;  
 }
+
 #io-bar input[type="file"]{display:none}
 
 #layout{
@@ -86,6 +87,8 @@ h1{color:#e8c84a;font-size:1.3rem;letter-spacing:4px;margin-bottom:.75rem;text-t
 #stat-def-val{color:#5090e0}
 #stat-turns-val{color:#aaa}
 #stat-steps-val{color:#8ab4f8}
+#stat-phase-val.phase-player{color:#52c88a}
+#stat-phase-val.phase-enemy{color:#e05252}
 #minimap{width:96px;height:96px;image-rendering:pixelated;border:1px solid #333;align-self:center}
 
 /* LOG */

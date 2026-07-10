@@ -14,6 +14,7 @@ export function initState(boardData, classId = 'warrior') {
     dim:      new Map(),
     searched: new Set(),
     stepsRemaining: 0,
+    phase:    'player',
     over:     false,
     won:      false,
   };

@@ -31,19 +31,19 @@
         </div>
         <div class="bar-wrap"><div class="bar bar-hp" id="bar-hp" style="width:100%"></div></div>
       </div>
-      <div class="stat-row"><span class="stat-label">Ataque</span><span class="stat-value" id="stat-atk-val">5</span></div>
-      <div class="stat-row"><span class="stat-label">Defensa</span><span class="stat-value" id="stat-def-val">3</span></div>
-      <div class="stat-row"><span class="stat-label">Destreza</span><span class="stat-value" id="stat-dex-val">2</span></div>
-      <div class="stat-row"><span class="stat-label">Oro</span><span class="stat-value" id="stat-gold-val">0</span></div>
-      <div class="stat-row"><span class="stat-label">Llaves</span><span class="stat-value" id="stat-keys-val">0</span></div>
-
-      <div class="hud-title">Experiencia</div>
-      <div class="stat-row"><span class="stat-label">Nivel</span><span class="stat-value" id="stat-level-val">1</span></div>
       <div class="stat-row">
         <span class="stat-label">XP</span>
         <span class="stat-value stat-xp" id="stat-xp-val">0/50</span>
       </div>
-      <div class="bar-wrap"><div class="bar bar-xp" id="bar-xp" style="width:0%"></div></div>
+      <div class="bar-wrap"><div class="bar bar-xp" id="bar-xp" style="width:0%"></div></div>      
+      <div class="stat-row"><span class="stat-label">Nivel</span><span class="stat-value" id="stat-level-val">1</span></div>
+      <div class="stat-row"><span class="stat-label">Ataque</span><span class="stat-value" id="stat-atk-val">5</span></div>
+      <div class="stat-row"><span class="stat-label">Defensa</span><span class="stat-value" id="stat-def-val">3</span></div>
+      <div class="stat-row"><span class="stat-label">Destreza</span><span class="stat-value" id="stat-dex-val">2</span></div>
+
+      <div class="hud-title">Mochila</div>
+      <div class="stat-row"><span class="stat-label">Oro</span><span class="stat-value" id="stat-gold-val">0</span></div>
+      <div class="stat-row"><span class="stat-label">Llaves</span><span class="stat-value" id="stat-keys-val">0</span></div>
 
       <div class="hud-title">Dados</div>
       <div class="stat-row">
@@ -62,10 +62,6 @@
         <span class="stat-label">Movimiento</span>
         <span class="stat-value" id="stat-dice-mov">0</span>
       </div>
-
-      <div class="hud-title">Turnos</div>
-      <div class="stat-row"><span class="stat-label">Turno</span><span class="stat-value" id="stat-turns-val">0</span></div>
-      <div class="stat-row"><span class="stat-label">Pasos</span><span class="stat-value" id="stat-steps-val">0</span></div>
 
       <div class="hud-title">Minimapa</div>
       <canvas id="minimap" width="12" height="12"></canvas>
@@ -104,15 +100,22 @@
     </div>
 
     <div id="io-bar">
-      <button id="btn-export">Exportar tablero</button>
-      <label><button id="btn-import-trigger">Importar tablero</button></label>
+      <div class="hud-title">Turnos</div>
+      <div class="stat-row"><span class="stat-label">Fase</span><span class="stat-value" id="stat-phase-val">Jugador</span></div>      
+      <div class="stat-row"><span class="stat-label">Turno</span><span class="stat-value" id="stat-turns-val">0</span></div>
+      <div class="stat-row"><span class="stat-label">Pasos</span><span class="stat-value" id="stat-steps-val">0</span></div>     
+
+      <div class="hud-title">Acciones</div>
       <input type="file" id="file-import" accept=".json">
       <button class="danger" id="btn-restart">Nueva partida</button>
       <button id="btn-search">Buscar</button>
       <button id="btn-roll-dice">Lanzar dados</button>
       <button id="btn-end-turn" class="primary">Terminar turno</button>
-      <div class="io-sep"></div>
-      <button id="btn-editor">✏️ Editor</button>
+
+      <div class="hud-title">Mapa</div>
+      <button id="btn-editor">Editor</button>
+      <button id="btn-export">Exportar</button>
+      <button id="btn-import-trigger">Importar</button>
     </div>
   </div>  
 </div>

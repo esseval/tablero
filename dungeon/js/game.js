@@ -110,6 +110,7 @@ function buyItem(item) {
 
 export function rollDice() {
   if (!G || G.over) return;
+  if (G.stepsRemaining > 0) return;
   const n = G.player.moveDice || 1;
   let total = 0;
   const parts = [];
@@ -120,6 +121,7 @@ export function rollDice() {
   }
   G.stepsRemaining = total;
   G.turns++;
+  G.phase = 'player';
   const desc = parts.join(' + ');
   log(`🎲 ${desc}${n > 1 ? ` = ${total}` : ''} pasos (turno ${G.turns})`, 'sys');
   updateHUD(G);
@@ -157,14 +159,23 @@ function handleEvent(state, key, event) {
   if (state.board.map[state.pos[0]][state.pos[1]] === 'exit') winGame();
 }
 
-// ── end turn ───────────────────────────────────────────────────────────────
+// ── phases ─────────────────────────────────────────────────────────────────
 
-export function endTurn() {
+function startEnemyPhase() {
+  if (G.over) return;
+  G.phase = 'enemy';
+  G.stepsRemaining = 0;
+  updateHUD(G);
   moveEnemies();
+  if (G.over) { render(G, boardEl()); updateHUD(G); return; }
   render(G, boardEl());
   updateHUD(G);
+  rollDice();
   boardEl().focus();
-  //if (!G.over && !G.won) rollDice();
+}
+
+export function endTurn() {
+  startEnemyPhase();
 }
 
 // ── move ──────────────────────────────────────────────────────────────────
@@ -172,6 +183,7 @@ export function endTurn() {
 export function tryMove(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.phase !== 'player') return;
   if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
@@ -204,7 +216,9 @@ export function tryMove(dr, dc) {
   render(G, boardEl());
   updateHUD(G);
 
-  // sin auto-fin-de-turno — el jugador decide cuándo terminar
+  if (G.stepsRemaining <= 0 && !G.over && !shopOpen) {
+    startEnemyPhase();
+  }
 }
 
 // ── lifecycle ─────────────────────────────────────────────────────────────
@@ -305,6 +319,7 @@ export function restartGame(levelList, classId) {
 function tryOpen(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.phase !== 'player') return;
   if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
@@ -336,6 +351,7 @@ function tryOpen(dr, dc) {
 function tryOpenDoor(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.phase !== 'player') return;
   if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
@@ -354,6 +370,7 @@ function tryOpenDoor(dr, dc) {
 
   render(G, boardEl());
   updateHUD(G);
+  startEnemyPhase();
 }
 
 // ── locked door ─────────────────────────────────────────────────────────────
@@ -361,6 +378,7 @@ function tryOpenDoor(dr, dc) {
 function tryOpenDoorLocked(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.phase !== 'player') return;
   if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
@@ -375,6 +393,7 @@ function tryOpenDoorLocked(dr, dc) {
   flashCell(nr, nc, 'flash-loot');
   render(G, boardEl());
   updateHUD(G);
+  startEnemyPhase();
 }
 
 // ── attack ─────────────────────────────────────────────────────────────────
@@ -405,6 +424,7 @@ function resolveCombatAt(key, enemy) {
 function tryAttack(dr, dc) {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.phase !== 'player') return;
   if (G.stepsRemaining <= 0) return;
   const [r, c] = G.pos;
   const nr = r + dr, nc = c + dc;
@@ -460,6 +480,7 @@ function moveEnemies() {
 export function trySearch() {
   if (!G || G.over) return;
   if (shopOpen) return;
+  if (G.phase !== 'player') return;
   if (G.stepsRemaining <= 0) return;
 
   const found = [];
@@ -480,7 +501,7 @@ export function trySearch() {
 
   render(G, boardEl());
   updateHUD(G);
-  boardEl().focus();
+  startEnemyPhase();
 }
 
 // ── input (click) ─────────────────────────────────────────────────────────
