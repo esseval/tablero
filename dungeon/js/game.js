@@ -10,6 +10,8 @@ import { roll, checkLevelUp, resolveAttackRound, rollSum } from './combat.js';
 
 const log = createLog('log');
 
+const OPEN_DIFFICULTY = 8;
+
 let G            = null;
 let levels       = [];
 let currentIndex = 0;
@@ -326,8 +328,8 @@ function tryOpen(dr, dc) {
   const key = `${nr},${nc}`;
   const event = G.events[key];
   if (!event || event.type !== 'treasure') return;
-  const success = roll(1, 8) > G.player.dex + rollSum(G.player.dexDice || 1);
-  if (!success) {
+  const failure = roll(1, OPEN_DIFFICULTY) > G.player.dex + rollSum(G.player.dexDice || 1);
+  if (failure) {
     log('🔒 Fallaste al abrir el cofre.', 'danger');
     render(G, boardEl());
     updateHUD(G);
@@ -357,7 +359,8 @@ function tryOpenDoor(dr, dc) {
   const nr = r + dr, nc = c + dc;
   if (G.board.map[nr][nc] !== 'door') return;
 
-  if (roll(1, 8) > G.player.dex + rollSum(G.player.dexDice || 1)) {
+  const failure = roll(1, OPEN_DIFFICULTY) > G.player.dex + rollSum(G.player.dexDice || 1); 
+  if (failure) {
     log('🚪 La puerta está atascada. No lográs abrirla.', 'danger');
     render(G, boardEl());
     updateHUD(G);
