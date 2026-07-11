@@ -148,6 +148,30 @@ button.danger:hover{background:#4a1010}
 #editor-bar .editor-actions{display:flex;gap:.5rem;justify-content:stretch}
 #editor-bar .editor-actions button{flex:1}
 
+/* DIFFICULTY SELECTOR */
+#difficulty-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);
+  align-items:center;justify-content:center;z-index:70;
+}
+#difficulty-overlay.on{display:flex}
+#difficulty-modal{
+  background:#161616;border:2px solid #3a3a3a;border-radius:8px;
+  padding:2rem;text-align:center;max-width:520px;width:92%;
+}
+#difficulty-modal h2{color:#e8c84a;margin-bottom:1rem;letter-spacing:2px;text-transform:uppercase}
+#difficulty-modal p{color:#888;font-size:.8rem;margin-bottom:1.25rem}
+#difficulty-cards{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center}
+.difficulty-card{
+  background:#1a1a1a;border:1px solid #333;border-radius:6px;
+  padding:1rem;width:140px;cursor:pointer;transition:border-color .15s,background .15s;
+  text-align:center;
+}
+.difficulty-card:hover{background:#222;border-color:#e8c84a}
+.difficulty-card h3{color:#e8c84a;font-size:.85rem;margin-bottom:.4rem}
+.difficulty-card .difficulty-desc{color:#888;font-size:.72rem;line-height:1.4}
+.difficulty-card.classic{border-color:#504080}
+.difficulty-card.classic:hover{border-color:#8060d0}
+
 /* CLASS SELECTOR */
 #class-overlay{
   display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);
