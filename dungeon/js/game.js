@@ -233,15 +233,15 @@ function winGame() {
   const next = currentIndex + 1;
   if (next < levels.length) {
     showModal(
-      `¡Nivel ${currentIndex + 1} superado!`,
-      `Avanzás al nivel ${next + 1}.\n\nTurnos: ${G.turns} | Oro: ${G.player.gold} | HP: ${G.player.hp}/${G.player.maxHp} | Nivel: ${G.player.level}`,
-      [{ label: `Nivel ${next + 1} →`, cls: 'primary', fn: () => advanceLevel(G.player) }]
+      `¡Piso ${currentIndex + 1} de ${levels.length} superado!`,
+      `Avanzás al piso ${next + 1}.\n\nTurnos: ${G.turns} | Oro: ${G.player.gold} | HP: ${G.player.hp}/${G.player.maxHp} | Nivel: ${G.player.level}`,
+      [{ label: `Piso ${next + 1} →`, cls: 'primary', fn: () => advanceLevel(G.player) }]
     );
   } else {
     G.won = true;
     showModal(
       '¡Victoria Total!',
-      `Conquistaste la mazmorra completa.\n\nTurnos: ${G.turns} | Oro: ${G.player.gold} | HP: ${G.player.hp}/${G.player.maxHp} | Nivel: ${G.player.level}`,
+      `Conquistaste los ${levels.length} pisos de la mazmorra.\n\nTurnos: ${G.turns} | Oro: ${G.player.gold} | HP: ${G.player.hp}/${G.player.maxHp} | Nivel: ${G.player.level}`,
       [{ label: 'Nueva partida', cls: 'primary', fn: () => document.dispatchEvent(new CustomEvent('restart-request')) }]
     );
   }

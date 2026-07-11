@@ -1,6 +1,8 @@
 import { restartGame, tryMove, trySearch, exportBoard, importBoard, rollDice, endTurn, toggleEditor, setEditorTile, setEditorEvent } from './game.js';
 import { MANIFEST } from '../level/manifest.js';
 import { CLASSES } from '../classes.js';
+import { generateLevels } from './generator.js';
+import { DIFFICULTIES } from '../level/difficulty.js';
 
 const boardEl = document.getElementById('board');
 
@@ -20,9 +22,55 @@ document.getElementById('btn-import-trigger').addEventListener('click', () =>
 );
 document.getElementById('file-import').addEventListener('change', importBoard);
 
-const levels = await Promise.all(
+const staticLevels = await Promise.all(
   MANIFEST.map(name => import(`../level/${name}.js`).then(m => m.default))
 );
+
+let chosenDifficulty = null;
+
+// ── difficulty selector ──────────────────────────────────────────────────────
+
+function showDifficultySelector() {
+  const overlay = document.getElementById('difficulty-overlay');
+  const cards   = document.getElementById('difficulty-cards');
+  cards.innerHTML = '';
+
+  for (const [id, diff] of Object.entries(DIFFICULTIES)) {
+    const card = document.createElement('div');
+    card.className = 'difficulty-card';
+    card.innerHTML = `
+      <h3>${diff.label}</h3>
+      <div class="difficulty-desc">${descFor(id)}</div>
+    `;
+    card.addEventListener('click', () => {
+      overlay.classList.remove('on');
+      chosenDifficulty = id;
+      showClassSelector();
+    });
+    cards.appendChild(card);
+  }
+
+  const classicCard = document.createElement('div');
+  classicCard.className = 'difficulty-card classic';
+  classicCard.innerHTML = `<h3>Clásico</h3><div class="difficulty-desc">Los 3 niveles originales de la mazmorra</div>`;
+  classicCard.addEventListener('click', () => {
+    overlay.classList.remove('on');
+    chosenDifficulty = 'classic';
+    showClassSelector();
+  });
+  cards.appendChild(classicCard);
+
+  overlay.classList.add('on');
+}
+
+function descFor(id) {
+  switch (id) {
+    case 'easy':   return `3 pisos — Mazmorra pequeña, enemigos débiles`;
+    case 'normal': return `5 pisos — Mazmorra media, enemigos balanceados`;
+    case 'hard':   return `7 pisos — Mazmorra grande, enemigos agresivos`;
+    default:       return '';
+  }
+}
 
 // ── class selector ──────────────────────────────────────────────────────────
 
@@ -44,7 +92,7 @@ function showClassSelector() {
     `;
     card.addEventListener('click', () => {
       overlay.classList.remove('on');
-      restartGame(levels, id);
+      startGame(id);
     });
     cards.appendChild(card);
   }
@@ -52,11 +100,21 @@ function showClassSelector() {
   overlay.classList.add('on');
 }
 
+function startGame(classId) {
+  if (chosenDifficulty === 'classic') {
+    restartGame(staticLevels, classId);
+  } else {
+    const diff = DIFFICULTIES[chosenDifficulty];
+    const levels = generateLevels(diff);
+    restartGame(levels, classId);
+  }
+}
+
 document.getElementById('btn-search').addEventListener('click', trySearch);
 document.getElementById('btn-end-turn').addEventListener('click', endTurn);
 document.getElementById('btn-roll-dice').addEventListener('click', rollDice);
-document.getElementById('btn-restart').addEventListener('click', showClassSelector);
-document.addEventListener('restart-request', showClassSelector);
+document.getElementById('btn-restart').addEventListener('click', showDifficultySelector);
+document.addEventListener('restart-request', showDifficultySelector);
 
 // ── editor wiring ────────────────────────────────────────────────────────────
 
@@ -75,4 +133,4 @@ for (const btn of document.querySelectorAll('#editor-bar .palette-btn')) {
 
 document.getElementById('btn-export-edited').addEventListener('click', exportBoard);
 
-showClassSelector();
+showDifficultySelector();
