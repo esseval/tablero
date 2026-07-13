@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dungeon Explorer — ASCII</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h1>⚔ DUNGEON EXPLORER — ASCII</h1>
+
+<div id="layout">
+
+  <div id="header">
+    <div id="log-wrap">
+      <div id="controls">
+        WASD / flechas para moverte  |  Click en celda  |  <span class="keyhint">B</span>uscar
+      </div>
+      <div id="log"></div>
+    </div>
+  </div>
+
+  <div id="content">
+    <pre id="ascii-hud">Cargando...</pre>
+
+    <div id="board-wrap">
+      <div id="board" tabindex="0">Cargando...</div>
+    </div>
+
+    <div id="io-bar">
+      <div class="hud-title">Turnos</div>
+      <div class="stat-row"><span class="stat-label">Fase</span><span class="stat-value" id="stat-phase-val">Jugador</span></div>
+      <div class="stat-row"><span class="stat-label">Turno</span><span class="stat-value" id="stat-turns-val">0</span></div>
+      <div class="stat-row"><span class="stat-label">Pasos</span><span class="stat-value" id="stat-steps-val">0</span></div>
+
+      <div class="hud-title">Acciones</div>
+      <button id="btn-roll-dice" class="primary">Lanzar dados</button>
+      <button id="btn-end-turn">Terminar turno</button>
+      <button id="btn-search">Buscar</button>
+      <button id="btn-restart" class="danger">Nueva partida</button>
+    </div>
+  </div>
+
+  <div id="legend">
+    <span class="legend-item"><span class="leg-ch" style="color:#44ffcc">@</span> jug</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#8b7355">#</span> pared</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#666">.</span> piso</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#44cc44">&gt;</span> salida</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#4488ff">&lt;</span> entrada</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#ccaa44">+</span> puerta</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#cc4444">*</span> cerradura</span>
+    <span class="legend-sep">|</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#ff5555">S</span> araña</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#ddd">K</span> esqueleto</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#44aa44">G</span> goblin</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#886644">T</span> troll</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#ff6600">D</span> drag&oacute;n</span>
+    <span class="legend-sep">|</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#ffcc00">$</span> tesoro</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#44ff44">!</span> poci&oacute;n</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#ff8800">^</span> trampa</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#8888ff">M</span> mercader</span>
+    <span class="legend-item"><span class="leg-ch" style="color:#ffaa44">k</span> llave</span>
+  </div>
+</div>
+
+<div id="overlay">
+  <div id="modal">
+    <h2 id="modal-title">Título</h2>
+    <p id="modal-body">Cuerpo</p>
+    <div id="modal-btns"></div>
+  </div>
+</div>
+
+<div id="difficulty-overlay">
+  <div id="difficulty-modal">
+    <h2>Elegí la dificultad</h2>
+    <p>La mazmorra se generará según el nivel de desafío.</p>
+    <div id="difficulty-cards"></div>
+  </div>
+</div>
+
+<div id="class-overlay">
+  <div id="class-modal">
+    <h2>Elegí tu clase</h2>
+    <div id="class-cards"></div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
