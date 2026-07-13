@@ -35,7 +35,7 @@ h1{
 
 /* fog states */
 .cell.fog{color:transparent;background:#0a0a0a}
-.cell.dim{opacity:.35}
+.cell.dim{opacity:.65}
 .cell.visited{color:#222}
 
 /* entity tooltip */
